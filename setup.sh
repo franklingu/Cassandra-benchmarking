@@ -20,7 +20,7 @@ fi
 cd data
 if [ $1 == "true" ]
 then
-  wget http://www.comp.nus.edu.sg/~cs4224/D8.zip -O D8.zip
+  wget http://www.comp.nus.edu.sg/~cs4224/${data_op}.zip -O ${data_op}.zip
   if [ -d $data_op ]
   then
     rm -rf $data_op
