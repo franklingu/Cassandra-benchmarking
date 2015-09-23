@@ -37,6 +37,7 @@ public class BulkLoad
 {
     /** Default output directory */
     public static final String DEFAULT_OUTPUT_DIR = "./../import";
+    public static final String DEFAULT_DATA_DIR = "./../data";
 
     public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -166,6 +167,11 @@ public class BulkLoad
         if (args.length == 0) {
             System.out.println("usage: Please specify the data set to use: e.g. -Pdataset=D8");
             return;
+        } else {
+            File outputDir = new File(DEFAULT_DATA_DIR + File.separator + args[0]);
+            if (!outputDir.exists()) {
+                throw new RuntimeException("No such data directory: " + outputDir);
+            }
         }
 
         String datasetToUse = args[0];
@@ -185,8 +191,7 @@ public class BulkLoad
 
             // Create output directory that has keyspace and table name in the path
             File outputDir = new File(DEFAULT_OUTPUT_DIR + File.separator + KEYSPACE + File.separator + tableName);
-            if (!outputDir.exists() && !outputDir.mkdirs())
-            {
+            if (!outputDir.exists() && !outputDir.mkdirs()) {
                 throw new RuntimeException("Cannot create output directory: " + outputDir);
             }
 
@@ -202,7 +207,7 @@ public class BulkLoad
             CQLSSTableWriter writer = builder.build();
 
             try (
-                    BufferedReader reader = new BufferedReader(new FileReader("data/" + datasetToUse + "/" + fileName + ".csv"));
+                    BufferedReader reader = new BufferedReader(new FileReader(DEFAULT_DATA_DIR + File.separator + datasetToUse + File.separator + fileName + ".csv"));
                     CsvListReader csvReader = new CsvListReader(reader, CsvPreference.STANDARD_PREFERENCE)
             ) {
                 // Write to SSTable while reading data
@@ -211,13 +216,11 @@ public class BulkLoad
                     writer.addRow(generateArgument(i, line));
                 }
             }
-            catch (InvalidRequestException | IOException e)
-            {
+            catch (InvalidRequestException | IOException e) {
                 e.printStackTrace();
             }
 
-            try
-            {
+            try {
                 writer.close();
             }
             catch (IOException ignore) {}

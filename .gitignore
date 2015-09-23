@@ -1,3 +1,4 @@
+
 *.class
 
 # Mobile Tools for Java (J2ME)
@@ -29,6 +30,10 @@ hs_err_pid*
 # IntelliJ
 /out/
 
+# Gradle
+.gradle/
+tmp/
+
 # mpeltonen/sbt-idea plugin
 .idea_modules/
 
@@ -42,3 +47,6 @@ crashlytics-build.properties
 
 # ignore data folder, which is for zip and csv files. can be downloaded
 /data
+
+# ignore import folder, which is for bulkloader's created table files.
+/import
