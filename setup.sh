@@ -47,17 +47,17 @@ fi
 # Bulk Loader Build Phase
 cd ../loader
 echo "Bulkloader build start"
-./gradlew build &> /dev/null
+./gradlew build
 echo "Bulkloader build success"
 
 echo "Bulkloader table creation start"
-./gradlew run &> /dev/null
+./gradlew run
 echo "Bulkloader table creation success"
 
 # Schema Import Phase
 cd ../data/$data_op
 echo "Load schema"
-cqlsh -f ../../schema.cql &> /dev/null
+cqlsh -f ../../schema.cql
 echo "Load schema success"
 
 # Bulk Load Phase
@@ -66,6 +66,6 @@ cd ../../
 tableNames="customers orders items orderlines stocks"
 for name in $tableNames  # Note: No quotes
 do
-  sstableloader -d localhost import/cs4224/$name &> /dev/null
+  sstableloader -d localhost import/cs4224/$name
 done
 echo "Initialization Successful"

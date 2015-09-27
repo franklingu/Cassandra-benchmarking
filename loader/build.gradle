@@ -5,6 +5,10 @@ version = '1.0'
 
 def cassandra_version = '2.2.1'
 
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.1'
+}
+
 repositories {
     mavenLocal()
     mavenCentral()
