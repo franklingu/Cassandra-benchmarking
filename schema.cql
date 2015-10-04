@@ -118,6 +118,8 @@ CREATE TABLE Stocks (
 	PRIMARY KEY (S_W_ID, S_I_ID)
 );
 
+CREATE INDEX idx_o_c_id on orders (o_c_id);
+
 -- import data
 copy warehouses (w_id, w_name, w_street_1, w_street_2, w_city, w_state, w_zip, w_tax, w_ytd) from 'warehouse.csv' with NULL = 'null';
 
