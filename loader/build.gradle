@@ -1,0 +1,32 @@
+apply plugin: 'java'
+
+sourceCompatibility = 1.7
+version = '1.0'
+
+def cassandra_version = '2.2.1'
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.1'
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    compile group: 'org.apache.cassandra', name: 'cassandra-all', version: cassandra_version
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+}
+
+task run(type:JavaExec) {
+    main = 'bulkload.BulkLoad'
+    classpath = sourceSets.main.runtimeClasspath
+
+    // check which Dataset to use, Default D8
+    if (project.hasProperty('dataset')) {
+        args dataset
+    } else {
+        args 'D8'
+    }
+}
