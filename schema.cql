@@ -74,6 +74,9 @@ CREATE TABLE Orders (
 	PRIMARY KEY (O_W_ID, O_D_ID, O_ID)
 );
 
+CREATE INDEX idx_o_c_id on Orders (o_c_id);
+CREATE INDEX idx_o_carrier_id ON Orders (o_carrier_id);
+
 CREATE TABLE Items (
 	I_ID int,
 	I_NAME varchar,
@@ -97,6 +100,8 @@ CREATE TABLE OrderLines (
 	PRIMARY KEY (OL_W_ID, OL_D_ID, OL_O_ID, OL_NUMBER)
 );
 
+CREATE INDEX idx_ol_i_id ON OrderLines (ol_i_id);
+
 CREATE TABLE Stocks (
 	S_W_ID int,
 	S_I_ID int,
@@ -117,8 +122,6 @@ CREATE TABLE Stocks (
 	S_DATA text,
 	PRIMARY KEY (S_W_ID, S_I_ID)
 );
-
-CREATE INDEX idx_o_c_id on orders (o_c_id);
 
 -- import data
 copy warehouses (w_id, w_name, w_street_1, w_street_2, w_city, w_state, w_zip, w_tax, w_ytd) from 'warehouse.csv' with NULL = 'null';
