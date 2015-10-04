@@ -74,6 +74,7 @@ CREATE TABLE Orders (
 	PRIMARY KEY (O_W_ID, O_D_ID, O_ID)
 );
 
+CREATE INDEX idx_o_c_id on Orders (o_c_id);
 CREATE INDEX idx_o_carrier_id ON Orders (o_carrier_id);
 
 CREATE TABLE Items (
