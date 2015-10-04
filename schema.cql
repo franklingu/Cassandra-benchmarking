@@ -74,6 +74,8 @@ CREATE TABLE Orders (
 	PRIMARY KEY (O_W_ID, O_D_ID, O_ID)
 );
 
+CREATE INDEX idx_o_carrier_id ON Orders (o_carrier_id);
+
 CREATE TABLE Items (
 	I_ID int,
 	I_NAME varchar,
@@ -96,6 +98,8 @@ CREATE TABLE OrderLines (
 	OL_DIST_INFO varchar,
 	PRIMARY KEY (OL_W_ID, OL_D_ID, OL_O_ID, OL_NUMBER)
 );
+
+CREATE INDEX idx_ol_i_id ON OrderLines (ol_i_id);
 
 CREATE TABLE Stocks (
 	S_W_ID int,

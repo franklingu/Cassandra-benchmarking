@@ -207,8 +207,8 @@ public class BulkLoad
             CQLSSTableWriter writer = builder.build();
 
             try (
-                    BufferedReader reader = new BufferedReader(new FileReader(DEFAULT_DATA_DIR + File.separator + datasetToUse + File.separator + fileName + ".csv"));
-                    CsvListReader csvReader = new CsvListReader(reader, CsvPreference.STANDARD_PREFERENCE)
+                BufferedReader reader = new BufferedReader(new FileReader(DEFAULT_DATA_DIR + File.separator + datasetToUse + File.separator + fileName + ".csv"));
+                CsvListReader csvReader = new CsvListReader(reader, CsvPreference.STANDARD_PREFERENCE)
             ) {
                 // Write to SSTable while reading data
                 List<String> line;
@@ -272,7 +272,7 @@ public class BulkLoad
                 try {
                     arg4 = Integer.parseInt((line.get(4)));
                 } catch (NumberFormatException e) {
-                    arg4 = null;
+                    arg4 = 0;
                 }
                 args.add(arg4);
 

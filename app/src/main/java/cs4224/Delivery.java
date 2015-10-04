@@ -9,14 +9,15 @@ public class Delivery {
         Cluster cluster;
         Session session;
 
-        // Connect to the cluster and keyspace "demo"
+        // Connect to the cluster and keyspace "cs4224"
         cluster = Cluster.builder().addContactPoint("127.0.0.1").build();
         session = cluster.connect("cs4224");
 
         // Use select to get the user we just entered
-        ResultSet results = session.execute("SELECT * FROM warehouses");
+        String query = "SELECT min(o_id) FROM orders where o_w_id = " + 1 + " AND o_carrier_id = null";
+        ResultSet results = session.execute(query);
         for (Row row : results) {
-            System.out.format("%d %s\n", row.getInt("w_id"), row.getString("w_city"));
+            System.out.format("%d %s\n", row.getInt("o_id"), row.getString("w_city"));
         }
 
         // Clean up the connection by closing it
