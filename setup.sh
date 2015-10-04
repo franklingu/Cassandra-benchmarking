@@ -42,6 +42,12 @@ then
     rm -rf $data_op
   fi
   unzip ${data_op}.zip
+  wget  http://www.comp.nus.edu.sg/~cs4224/xact-spec-files.zip
+  if [ -d "xact-spec-files" ]
+  then
+    rm -rf xact-spec-files
+  fi
+  unzip xact-spec-files.zip
 fi
 
 # Bulk Loader Build Phase
