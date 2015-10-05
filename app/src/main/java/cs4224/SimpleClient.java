@@ -1,8 +1,6 @@
 package cs4224;
 
 import com.datastax.driver.core.Cluster;
-import com.datastax.driver.core.Host;
-import com.datastax.driver.core.Metadata;
 import com.datastax.driver.core.Session;
 
 /**
@@ -24,6 +22,7 @@ public class SimpleClient {
     }
 
     public void close() {
+        session.close();
         cluster.close();
     }
 
