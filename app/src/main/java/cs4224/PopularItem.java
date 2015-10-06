@@ -32,7 +32,7 @@ public class PopularItem {
                 + "WHERE o_w_id = ? AND o_d_id = ? AND o_id >= ?;");
         ResultSet orders = session.execute(selectOrder.bind(W_ID, D_ID, nextOrderID - range));
 
-        HashMap<Integer, Integer> orderItm = new HashMap<Integer, Integer>();
+        HashMap<Integer, Integer> itemCount = new HashMap<Integer, Integer>();
         HashMap<Integer, String> popularItms = new HashMap<Integer, String>();
 
         // process each order and find most popular item for each order
@@ -63,8 +63,13 @@ public class PopularItem {
                     popularItmCnt = quantity;
                     popularItmID = itmID;
                 }
-                orderItm.put(orderID,itmID);
+                if(!itemCount.containsKey(itmID)){
+                    itemCount.put(itmID, 1);
+                }else{
+                    itemCount.put(itmID, itemCount.get(itmID) + 1);
+                }
             }
+
             // find popular item name from items
             PreparedStatement selectItem = session.prepare("SELECT i_name FROM items WHERE i_id = ?;");
             ResultSet popularItems = session.execute(selectItem.bind(popularItmID));
@@ -79,14 +84,7 @@ public class PopularItem {
         }
 
         for(Integer itmID : popularItms.keySet()){
-            int count = 0;
-            System.out.print("Item:" + popularItms.get(itmID));
-            for(Integer orderID : orderItm.keySet()){
-                if(orderItm.get(orderID) == itmID){
-                    count++;
-                }
-            }
-            System.out.println(count);
+            System.out.print("Item:" + popularItms.get(itmID) + itemCount.get(itmID));
         }
     }
 
