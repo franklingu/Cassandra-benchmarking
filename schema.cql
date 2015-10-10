@@ -68,8 +68,8 @@ CREATE TABLE Orders (
 	O_ID int,
 	O_C_ID int,
 	O_CARRIER_ID int,
-	O_OL_CNT decimal,
-	O_ALL_LOCAL decimal,
+	O_OL_CNT int,
+	O_ALL_LOCAL int,
 	O_ENTRY_D timestamp,
 	PRIMARY KEY (O_W_ID, O_D_ID, O_ID)
 );
@@ -95,7 +95,7 @@ CREATE TABLE OrderLines (
 	OL_DELIVERY_D timestamp,
 	OL_AMOUNT decimal,
 	OL_SUPPLY_W_ID int,
-	OL_QUANTITY decimal,
+	OL_QUANTITY int,
 	OL_DIST_INFO varchar,
 	PRIMARY KEY (OL_W_ID, OL_D_ID, OL_O_ID, OL_NUMBER)
 );
@@ -105,7 +105,7 @@ CREATE INDEX idx_ol_i_id ON OrderLines (ol_i_id);
 CREATE TABLE Stocks (
 	S_W_ID int,
 	S_I_ID int,
-	S_QUANTITY decimal,
+	S_QUANTITY int,
 	S_YTD decimal,
 	S_ORDER_CNT int,
 	S_REMOTE_CNT int,
@@ -122,6 +122,8 @@ CREATE TABLE Stocks (
 	S_DATA text,
 	PRIMARY KEY (S_W_ID, S_I_ID)
 );
+
+CREATE INDEX idx_s_quantity on Stocks (s_quantity);
 
 -- import data
 copy warehouses (w_id, w_name, w_street_1, w_street_2, w_city, w_state, w_zip, w_tax, w_ytd) from 'warehouse.csv' with NULL = 'null';

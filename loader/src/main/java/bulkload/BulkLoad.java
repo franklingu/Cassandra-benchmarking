@@ -79,8 +79,8 @@ public class BulkLoad
             "O_ID int," +
             "O_C_ID int," +
             "O_CARRIER_ID int," +
-            "O_OL_CNT decimal," +
-            "O_ALL_LOCAL decimal," +
+            "O_OL_CNT int," +
+            "O_ALL_LOCAL int," +
             "O_ENTRY_D timestamp," +
             "PRIMARY KEY (O_W_ID, O_D_ID, O_ID));";
 
@@ -102,14 +102,14 @@ public class BulkLoad
             "OL_DELIVERY_D timestamp," +
             "OL_AMOUNT decimal," +
             "OL_SUPPLY_W_ID int," +
-            "OL_QUANTITY decimal," +
+            "OL_QUANTITY int," +
             "OL_DIST_INFO varchar," +
             "PRIMARY KEY (OL_W_ID, OL_D_ID, OL_O_ID, OL_NUMBER));";
 
     public static final String SCHEMA5 = "CREATE TABLE cs4224.stocks (" +
             "S_W_ID int," +
             "S_I_ID int," +
-            "S_QUANTITY decimal," +
+            "S_QUANTITY int," +
             "S_YTD decimal," +
             "S_ORDER_CNT int," +
             "S_REMOTE_CNT int," +
@@ -276,8 +276,8 @@ public class BulkLoad
                 }
                 args.add(arg4);
 
-                args.add(new BigDecimal(line.get(5)));
-                args.add(new BigDecimal(line.get(6)));
+                args.add(Integer.parseInt(line.get(5)));  // o_ol_cnt
+                args.add(Integer.parseInt(line.get(6)));  // o_all_local
                 Date arg7;
                 try {
                     arg7 = DATE_FORMAT.parse(line.get(7));
@@ -308,14 +308,14 @@ public class BulkLoad
                 args.add(arg5);
                 args.add(new BigDecimal(line.get(6)));
                 args.add(Integer.parseInt(line.get(7)));
-                args.add(new BigDecimal(line.get(8)));
+                args.add(Integer.parseInt(line.get(8)));  // ol_quantity
                 args.add(line.get(9));
                 break;
-            case 4: // Customers
+            case 4: // Stocks
                 args.add(Integer.parseInt(line.get(0)));
                 args.add(Integer.parseInt(line.get(1)));
 
-                args.add(new BigDecimal(line.get(2)));
+                args.add(Integer.parseInt(line.get(2)));  // s_quantity
                 args.add(new BigDecimal(line.get(3)));
 
                 args.add(Integer.parseInt(line.get(4)));
