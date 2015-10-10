@@ -2,19 +2,19 @@ package cs4224;
 import com.datastax.driver.core.*;
 import java.util.*;
 
-/**
- * Created by junchao on 15-10-4.
- */
 public class Delivery {
     public static void main(String[] args) {
+        int inputWId = 1, inputCarrierId = 1;
+        Delivery.executeQuery(inputWId, inputCarrierId);
+    }
+
+
+    public static void executeQuery(int inputWId, int inputCarrierId) {
         Cluster cluster;
         Session session;
 
-        // Connect to the cluster and key space "cs4224"
         cluster = Cluster.builder().addContactPoint("127.0.0.1").build();
         session = cluster.connect("cs4224");
-
-        int inputWId = 1, inputCarrierId = 1;
 
         String query = String.format("SELECT min(o_id) as min_o_id, o_w_id, o_d_id, o_c_id " +
                 " FROM Orders where o_w_id = %d AND o_carrier_id = 0", inputWId);
@@ -53,7 +53,7 @@ public class Delivery {
         float cBalance = 0;
         int cCnt = 0;
         query = String.format("SELECT c_balance, c_delivery_cnt FROM Customers WHERE c_w_id = %d AND c_d_id = %d"
-                 + " AND c_id = %d", wId, dId, cId);
+                + " AND c_id = %d", wId, dId, cId);
         results = session.execute(query);
         for (Row row : results) {
             cBalance = row.getDecimal("c_balance").floatValue();
@@ -70,7 +70,6 @@ public class Delivery {
                 + " AND c_id = %d", cCnt, wId, dId, cId);
         session.execute(query);
 
-        // Clean up the connection by closing it
         cluster.close();
     }
 }
