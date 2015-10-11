@@ -21,14 +21,7 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>1.4.0</version>
                 <configuration>
-                    <executable>java</executable>
-                    <arguments>
-                        <argument>-classpath</argument>
-                        <!-- automatically creates the classpath using all project dependencies,
-                             also adding the project build directory -->
-                        <classpath/>
-                        <argument>cs4224.ClientApp</argument>
-                    </arguments>
+                    <mainClass>cs4224.ClientApp</mainClass>
                 </configuration>
             </plugin>
         </plugins>
