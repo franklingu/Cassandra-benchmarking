@@ -22,6 +22,11 @@
                 <version>1.4.0</version>
                 <configuration>
                     <mainClass>cs4224.ClientApp</mainClass>
+                    <arguments>
+                        <argument>-Xms1g</argument>
+                        <argument>-Xmx4g</argument>
+                    </arguments>
+                    <cleanupDaemonThreads>false</cleanupDaemonThreads>
                 </configuration>
             </plugin>
         </plugins>
