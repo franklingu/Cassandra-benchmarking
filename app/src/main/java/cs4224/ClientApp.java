@@ -15,14 +15,15 @@ public class ClientApp {
             useD8 = true;
             transactionFileNumber = 0;
         } else {
-            useD8 = args[0] == "D8";
+            useD8 = (args[0].trim()).equals("D8");
             transactionFileNumber = Integer.parseInt(args[1]);
         }
+
         ClientApp ca = new ClientApp(useD8, transactionFileNumber);
         ca.runQueries();
     }
 
-    public  ClientApp(boolean useD8, int transactionFileNumber) {
+    public ClientApp(boolean useD8, int transactionFileNumber) {
         this.useD8 = useD8;
         this.transactionFileNumber = transactionFileNumber;
     }
