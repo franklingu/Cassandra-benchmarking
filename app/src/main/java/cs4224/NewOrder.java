@@ -80,13 +80,13 @@ public class NewOrder {
 
         // insert this order
         Date entryDate = new Date();
-        session.execute(createOrderQuery.bind(w_id, d_id, orderNo, c_id, null, new BigDecimal(num_items), new BigDecimal(isAllLocal), entryDate));
+        session.execute(createOrderQuery.bind(w_id, d_id, orderNo, c_id, null, num_items, isAllLocal, entryDate));
         System.out.println(String.format("Order number: %d, %s", orderNo, entryDate));
 
         double totalAmount = 0.0;
-        int item, warehouse, request_quantity, s_order_cnt, s_remote_cnt;
+        int item, warehouse, request_quantity, s_order_cnt, s_remote_cnt, s_quantity, adjusted_quantity;
         String district_info, name;
-        double s_quantity, s_ytd, adjusted_quantity;
+        double s_ytd;
         double price, item_amount;
         Row resultRow;
         ArrayList<String> outputInfo = new ArrayList<String>();
@@ -100,22 +100,22 @@ public class NewOrder {
             results = session.execute(String.format("select s_quantity, s_ytd, s_order_cnt, s_remote_cnt, s_dist_%02d from stocks where s_w_id = %d and s_i_id = %d;", d_id, w_id, item));
             resultRow = results.one();
 
-            s_quantity = resultRow.getDecimal("s_quantity").doubleValue();
+            s_quantity = resultRow.getInt("s_quantity");
             s_ytd = resultRow.getDecimal("s_ytd").doubleValue();
             s_order_cnt = resultRow.getInt("s_order_cnt");
             s_remote_cnt = resultRow.getInt("s_remote_cnt");
             district_info = resultRow.getString(4);
 
             // adjust quantity
-            adjusted_quantity = s_quantity - (float) request_quantity;
+            adjusted_quantity = s_quantity - request_quantity;
             adjusted_quantity = adjusted_quantity < 10 ? adjusted_quantity + 91 : adjusted_quantity;
 
             // check if it is a remote order
             s_remote_cnt = warehouse == w_id ? s_remote_cnt : s_remote_cnt + 1;
 
             // update stock
-            session.execute(String.format("update stocks set s_quantity = %.2f, s_ytd = %.2f, s_order_cnt = %d, s_remote_cnt = %d where s_w_id = %d and s_i_id = %d;",
-                    adjusted_quantity, s_ytd + request_quantity, s_order_cnt + 1, s_remote_cnt, w_id, item));
+            session.execute(String.format("update stocks set s_quantity = %d, s_ytd = %.2f, s_order_cnt = %d, s_remote_cnt = %d where s_w_id = %d and s_i_id = %d;",
+                    adjusted_quantity, s_ytd + (float)request_quantity, s_order_cnt + 1, s_remote_cnt, w_id, item));
 
             // Get price for this item
             results = session.execute(String.format("select i_price, i_name from items where i_id = %d;", item));
@@ -129,10 +129,10 @@ public class NewOrder {
             totalAmount += item_amount;
 
             // create new order line
-            session.execute(createOrderLineQuery.bind(w_id, d_id, orderNo, i + 1, item, null, new BigDecimal(item_amount), warehouse, new BigDecimal(request_quantity), district_info));
+            session.execute(createOrderLineQuery.bind(w_id, d_id, orderNo, i + 1, item, null, new BigDecimal(item_amount), warehouse, request_quantity, district_info));
 
             // add output info
-            outputInfo.add(String.format("Item: %d: %s, Warehouse %d. Quantity: %d. Amount: %.2f. Stock: %.2f.", i + 1, name, warehouse, request_quantity, item_amount, s_quantity));
+            outputInfo.add(String.format("Item: %d: %s, Warehouse %d. Quantity: %d. Amount: %.2f. Stock: %d", i + 1, name, warehouse, request_quantity, item_amount, s_quantity));
         }
 
         totalAmount = totalAmount * (1 + district_tax + warehouse_tax) * (1 - discount);
@@ -152,6 +152,7 @@ public class NewOrder {
         int[] items = new int[] {1, 2};
         int[] quantity = new int[] {4, 1};
         transaction.createOrder(1, 10, 2, 2, items, warehouses, quantity);
+        transaction.createOrder(2, 8, 13, 2, items, warehouses, quantity);
         client.close();
     }
 
