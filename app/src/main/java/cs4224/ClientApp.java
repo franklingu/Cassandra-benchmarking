@@ -14,6 +14,8 @@ public class ClientApp {
         // Initialize transaction
         NewOrder n = new NewOrder(client);
         OrderStatus o = new OrderStatus(client);
+        Delivery d = new Delivery(client);
+        StockLevel s = new StockLevel(client);
 
         File file = new File("../data/xact-spec-files/D8-xact-files/0.txt");
         try {
@@ -47,6 +49,7 @@ public class ClientApp {
                 } else if (inputLine.charAt(0) == 'D') {
                     int wId = Integer.parseInt(params[1]);
                     int carrierId = Integer.parseInt(params[2]);
+                    d.executeQuery(wId, carrierId);
                 } else if (inputLine.charAt(0) == 'O') { // Order Status
                     int wId = Integer.parseInt(params[1]);
                     int dId = Integer.parseInt(params[2]);
@@ -57,6 +60,7 @@ public class ClientApp {
                     int dId = Integer.parseInt(params[2]);
                     int T = Integer.parseInt(params[3]);
                     int L = Integer.parseInt(params[4]);
+                    s.executeQuery(wId, dId, T, L);
                 } else if (inputLine.charAt(0) == 'I') {
                     int wId = Integer.parseInt(params[1]);
                     int dId = Integer.parseInt(params[2]);

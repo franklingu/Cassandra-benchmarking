@@ -3,19 +3,19 @@ import com.datastax.driver.core.*;
 import java.util.*;
 
 public class Delivery {
+    private Session session;
+
     public static void main(String[] args) {
         int inputWId = 1, inputCarrierId = 1;
-        Delivery.executeQuery(inputWId, inputCarrierId);
+        Delivery d = new Delivery(new SimpleClient());
+        d.executeQuery(inputWId, inputCarrierId);
     }
 
+    public Delivery(SimpleClient client) {
+        this.session = client.getSession();
+    }
 
-    public static void executeQuery(int inputWId, int inputCarrierId) {
-        Cluster cluster;
-        Session session;
-
-        cluster = Cluster.builder().addContactPoint("127.0.0.1").build();
-        session = cluster.connect("cs4224");
-
+    public void executeQuery(int inputWId, int inputCarrierId) {
         String query = String.format("SELECT min(o_id) as min_o_id, o_w_id, o_d_id, o_c_id " +
                 " FROM Orders where o_w_id = %d AND o_carrier_id = 0", inputWId);
         ResultSet results = session.execute(query);
@@ -26,7 +26,7 @@ public class Delivery {
             wId = row.getInt("o_w_id");
             dId = row.getInt("o_d_id");
             cId = row.getInt("o_c_id");
-            System.out.format("%d %d %d %d\n", minOId, wId, dId, cId);
+            // System.out.format("%d %d %d %d\n", minOId, wId, dId, cId);
             break;
         }
 
@@ -48,7 +48,7 @@ public class Delivery {
                     + " AND ol_o_id = %d AND ol_number = %d", now.getTime(), wId, dId, minOId, ol_number);
             session.execute(query);
         }
-        System.out.println(olSum);
+        // System.out.println(olSum);
 
         float cBalance = 0;
         int cCnt = 0;
@@ -59,8 +59,8 @@ public class Delivery {
             cBalance = row.getDecimal("c_balance").floatValue();
             cCnt = row.getInt("c_delivery_cnt");
         }
-        System.out.println(cBalance);
-        System.out.println(cCnt);
+        // System.out.println(cBalance);
+        // System.out.println(cCnt);
         cBalance += olSum;
         cCnt++;
         query = String.format("UPDATE Customers SET c_balance = %f WHERE c_w_id = %d AND c_d_id = %d"
@@ -69,7 +69,5 @@ public class Delivery {
         query = String.format("UPDATE Customers SET c_delivery_cnt = %d WHERE c_w_id = %d AND c_d_id = %d"
                 + " AND c_id = %d", cCnt, wId, dId, cId);
         session.execute(query);
-
-        cluster.close();
     }
 }
