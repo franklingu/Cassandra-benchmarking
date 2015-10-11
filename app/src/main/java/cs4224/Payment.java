@@ -13,14 +13,6 @@ import java.util.List;
  * Created by Wang Yu on 04-Oct-15.
  */
 public class Payment {
-    private static final String LOCAL_HOST = "127.0.0.1";
-    private static final String DATABASE = "cs4224";
-
-    private int C_W_ID;
-    private int C_D_ID;
-    private int C_ID;
-    private float PAYMENT;
-
     private PreparedStatement selectWarehouse;
     private PreparedStatement updateWarehouse;
     private PreparedStatement selectDistrict;
@@ -29,32 +21,22 @@ public class Payment {
     private PreparedStatement updateCustomer;
     private Session session;
 
-    public Payment(Session session,int c_w_id, int c_d_id,int c_id,float amount){
-        this.C_W_ID = c_w_id;
-        this.C_D_ID = c_d_id;
-        this.C_ID = c_id;
-        this.PAYMENT = amount;
-        this.session = session;
+    public Payment(SimpleClient client){
+        this.session = client.getSession();
 
-        selectWarehouse = session.prepare("SELECT w_street_1, w_street_2, w_city, w_state, w_zip, w_ytd "
-                + "FROM warehouses "
-                + "WHERE w_id = ?;");
+        selectWarehouse = session.prepare("SELECT w_street_1, w_street_2, w_city, w_state, w_zip, w_ytd FROM warehouses WHERE w_id = ?;");
         updateWarehouse = session.prepare("UPDATE warehouses SET w_ytd = ? WHERE w_id = ?;");
 
-        selectDistrict = session.prepare("SELECT d_street_1, d_street_2, d_city, d_state, d_zip, d_ytd "
-                + "FROM districts WHERE d_w_id = ? AND d_id = ?;");
-        updateDistrict = session.prepare("UPDATE districts SET d_ytd = ?"
-                + "WHERE d_w_id = ? AND d_id = ?;");
-        selectCustomer = session.prepare("SELECT c_first, c_middle, c_last, c_street_1, c_street_2,"
-                + "c_city,c_state, c_zip, c_phone, c_since, c_credit, c_credit_lim,"
-                + "c_discount, c_balance, c_ytd_payment, c_payment_cnt "
-                + "FROM customers WHERE c_w_id = ? AND c_d_id = ? AND c_id = ?;");
-        updateCustomer = session.prepare("UPDATE customers SET c_balance = ?, c_ytd_payment = ?, c_payment_cnt = ?"
-                + "WHERE c_w_id = ? AND c_d_id = ? AND c_id = ?;");
+        selectDistrict = session.prepare("SELECT d_street_1, d_street_2, d_city, d_state, d_zip, d_ytd FROM districts WHERE d_w_id = ? AND d_id = ?;");
+        updateDistrict = session.prepare("UPDATE districts SET d_ytd = ? WHERE d_w_id = ? AND d_id = ?;");
+
+        selectCustomer = session.prepare("SELECT c_first, c_middle, c_last, c_street_1, c_street_2, c_city, c_state, c_zip, c_phone, c_since, c_credit,"
+                + "c_credit_lim, c_discount, c_balance, c_ytd_payment, c_payment_cnt FROM customers WHERE c_w_id = ? AND c_d_id = ? AND c_id = ?;");
+        updateCustomer = session.prepare("UPDATE customers SET c_balance = ?, c_ytd_payment = ?, c_payment_cnt = ? WHERE c_w_id = ? AND c_d_id = ? AND c_id = ?;");
 
     }
 
-    public void processPayment(Session session){
+    public void processPayment(int C_W_ID, int C_D_ID, int C_ID, float PAYMENT){
         // update the warehouse C_W_ID by incrementing W_YTD by PAYMENT
         updateWarehouseYTD(C_W_ID, PAYMENT);
         // update the district (C_W_ID,C_D_ID) by incrementing D_YTD by PAYMENT
@@ -121,15 +103,4 @@ public class Payment {
         System.out.println("Payment Amount:" + amount);
     }
 
-    public static void main(String[] args) {
-        SimpleClient client = new SimpleClient();
-        client.connect(LOCAL_HOST, DATABASE);
-        Session session = client.getSession();
-        Payment payment1 = new Payment(session,1,1,1,Float.valueOf(3));
-        Payment payment2 = new Payment(session,2,2,2,Float.valueOf(8));
-        payment1.processPayment(session);
-        payment2.processPayment(session);
-
-        client.close();
-    }
 }

@@ -16,8 +16,12 @@ public class ClientApp {
         OrderStatus o = new OrderStatus(client);
         Delivery d = new Delivery(client);
         StockLevel s = new StockLevel(client);
+        Payment p = new Payment(client);
+        PopularItem popular = new PopularItem(client);
 
         File file = new File("../data/xact-spec-files/D8-xact-files/0.txt");
+        long startTime = System.nanoTime();
+        int totalTransactions = 0;
         try {
             BufferedReader reader = new BufferedReader(new FileReader(file));
             String inputLine = reader.readLine();
@@ -45,7 +49,9 @@ public class ClientApp {
                 } else if (inputLine.charAt(0) == 'P') {
                     int wId = Integer.parseInt(params[1]);
                     int dId = Integer.parseInt(params[2]);
-                    float payment = Float.parseFloat(params[3]);
+                    int cId = Integer.parseInt(params[3]);
+                    float payment = Float.parseFloat(params[4]);
+                    p.processPayment(wId, dId, cId, payment);
                 } else if (inputLine.charAt(0) == 'D') {
                     int wId = Integer.parseInt(params[1]);
                     int carrierId = Integer.parseInt(params[2]);
@@ -65,15 +71,22 @@ public class ClientApp {
                     int wId = Integer.parseInt(params[1]);
                     int dId = Integer.parseInt(params[2]);
                     int L = Integer.parseInt(params[3]);
+                    popular.findItem(wId, dId, L);
                 } else {
                     System.out.println("\n\nSeems the way of reading of file is wrong\n\n");
                 }
+                totalTransactions++;
                 System.out.println(); // new line
                 inputLine = reader.readLine();
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+        long endTime = System.nanoTime();
+        long duration = (endTime - startTime) / 1000000000;
+        System.err.println(String.format("Total Transactions: %d", totalTransactions));
+        System.err.println(String.format("Time used: %d s", duration));
+        System.err.println(String.format("Throughput: %.4f", totalTransactions / (float)duration));
         client.close();
     }
 }
