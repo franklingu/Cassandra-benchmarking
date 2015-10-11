@@ -1,9 +1,19 @@
 package cs4224;
 import com.datastax.driver.core.*;
+
+import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.*;
 
 public class Delivery {
     private Session session;
+    private PreparedStatement selectMinOIdQuery;
+    private PreparedStatement updateCarrierIdQuery;
+    private PreparedStatement selectOlNumberQuery;
+    private PreparedStatement updateDeliveryDateQuery;
+    private PreparedStatement selectBalanceCntQuery;
+    private PreparedStatement updateBalanceCntQuery;
+
 
     public static void main(String[] args) {
         int inputWId = 1, inputCarrierId = 1;
@@ -13,12 +23,23 @@ public class Delivery {
 
     public Delivery(SimpleClient client) {
         this.session = client.getSession();
+
+        this.selectMinOIdQuery = session.prepare("SELECT min(o_id) as min_o_id, o_w_id, o_d_id, o_c_id "
+                + "FROM Orders where o_w_id = ? AND o_carrier_id = 0;");
+        this.updateCarrierIdQuery = session.prepare("UPDATE Orders SET o_carrier_id = ? WHERE o_w_id = ? AND o_d_id = ?"
+                + " AND o_id = ?;");
+        this.selectOlNumberQuery = session.prepare("SELECT ol_number, ol_amount FROM OrderLines WHERE ol_w_id = ? AND ol_d_id = ?"
+                + " AND ol_o_id = ?;");
+        this.updateDeliveryDateQuery = session.prepare("UPDATE OrderLines SET ol_delivery_d = ? WHERE ol_w_id = ? AND ol_d_id = ?"
+                + " AND ol_o_id = ? AND ol_number = ?;");
+        this.selectBalanceCntQuery = session.prepare("SELECT c_balance, c_delivery_cnt FROM Customers WHERE c_w_id = ? AND c_d_id = ?"
+                + " AND c_id = ?;");
+        this.updateBalanceCntQuery = session.prepare("UPDATE Customers SET c_balance = ?, c_delivery_cnt = ? WHERE c_w_id = ? AND c_d_id = ?"
+                + " AND c_id = ?;");
     }
 
     public void executeQuery(int inputWId, int inputCarrierId) {
-        String query = String.format("SELECT min(o_id) as min_o_id, o_w_id, o_d_id, o_c_id " +
-                " FROM Orders where o_w_id = %d AND o_carrier_id = 0", inputWId);
-        ResultSet results = session.execute(query);
+        ResultSet results = session.execute(selectMinOIdQuery.bind(inputWId));
         int minOId = 0;
         int wId = 0, dId = 0, cId = 0;
         for (Row row : results) {
@@ -26,48 +47,31 @@ public class Delivery {
             wId = row.getInt("o_w_id");
             dId = row.getInt("o_d_id");
             cId = row.getInt("o_c_id");
-            // System.out.format("%d %d %d %d\n", minOId, wId, dId, cId);
             break;
         }
 
-        query = String.format("UPDATE Orders SET o_carrier_id = %d WHERE o_w_id = %d AND o_d_id = %d"
-                + " AND o_id = %d", inputCarrierId, wId, dId, minOId);
-        session.execute(query);
+        session.execute(updateCarrierIdQuery.bind(inputCarrierId, wId, dId, minOId));
 
         Date now = new Date();
 
-        query = String.format("SELECT ol_number, ol_amount FROM OrderLines WHERE ol_w_id = %d AND ol_d_id = %d"
-                + " AND ol_o_id = %d", wId, dId, minOId);
-        results = session.execute(query);
+        results = session.execute(selectOlNumberQuery.bind(wId, dId, minOId));
         float olSum = 0;
-        int ol_number = 0;
+        int olNumber = 0;
         for (Row row : results) {
             olSum += row.getDecimal("ol_amount").floatValue();
-            ol_number = row.getInt("ol_number");
-            query = String.format("UPDATE OrderLines SET ol_delivery_d = %d WHERE ol_w_id = %d AND ol_d_id = %d"
-                    + " AND ol_o_id = %d AND ol_number = %d", now.getTime(), wId, dId, minOId, ol_number);
-            session.execute(query);
+            olNumber = row.getInt("ol_number");
+            session.execute(updateDeliveryDateQuery.bind(new Timestamp(now.getTime()), wId, dId, minOId, olNumber));
         }
-        // System.out.println(olSum);
 
         float cBalance = 0;
         int cCnt = 0;
-        query = String.format("SELECT c_balance, c_delivery_cnt FROM Customers WHERE c_w_id = %d AND c_d_id = %d"
-                + " AND c_id = %d", wId, dId, cId);
-        results = session.execute(query);
+        results = session.execute(selectBalanceCntQuery.bind(wId, dId, cId));
         for (Row row : results) {
             cBalance = row.getDecimal("c_balance").floatValue();
             cCnt = row.getInt("c_delivery_cnt");
         }
-        // System.out.println(cBalance);
-        // System.out.println(cCnt);
         cBalance += olSum;
         cCnt++;
-        query = String.format("UPDATE Customers SET c_balance = %f WHERE c_w_id = %d AND c_d_id = %d"
-                + " AND c_id = %d", cBalance, wId, dId, cId);
-        session.execute(query);
-        query = String.format("UPDATE Customers SET c_delivery_cnt = %d WHERE c_w_id = %d AND c_d_id = %d"
-                + " AND c_id = %d", cCnt, wId, dId, cId);
-        session.execute(query);
+        session.execute(updateBalanceCntQuery.bind(new BigDecimal(cBalance), cCnt, wId, dId, cId));
     }
 }
