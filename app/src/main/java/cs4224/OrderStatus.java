@@ -22,10 +22,6 @@ public class OrderStatus {
         this.customerQuery = session.prepare("select * from customers where c_w_id = ? and c_d_id = ? and c_id = ?;");
         this.orderLineQuery = session.prepare("select * from orderlines where ol_w_id = ? and ol_d_id = ? and ol_o_id = ?;");
         this.orderQuery = session.prepare("select * from orders where o_w_id = ? and o_d_id = ? and o_c_id = ?;");
-
-        getOrderStatus(1, 1, 75);
-        getOrderStatus(3, 8, 7);
-
     }
 
     /**
@@ -71,8 +67,8 @@ public class OrderStatus {
         results = session.execute(orderLineQuery.bind(c_w_id, c_d_id, orderId));
         System.out.println("Items in this order:");
         for (Row row : results) {
-            System.out.println(String.format("%d, %d, %.4f, %.4f, %s ",row.getInt("ol_i_id"), row.getInt("ol_supply_w_id"),
-                   row.getDecimal("ol_quantity"), row.getDecimal("ol_amount"), row.getTimestamp("ol_delivery_d")));
+            System.out.println(String.format("%d, %d, %d, %.4f, %s ",row.getInt("ol_i_id"), row.getInt("ol_supply_w_id"),
+                   row.getInt("ol_quantity"), row.getDecimal("ol_amount"), row.getTimestamp("ol_delivery_d")));
         }
 
         System.out.println();
