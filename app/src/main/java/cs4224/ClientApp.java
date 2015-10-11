@@ -79,6 +79,7 @@ public class ClientApp {
                 System.out.println(); // new line
                 inputLine = reader.readLine();
             }
+            reader.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
