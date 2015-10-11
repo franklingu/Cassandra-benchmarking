@@ -2,12 +2,14 @@ package cs4224;
 import com.datastax.driver.core.*;
 
 public class StockLevel {
+    private Session session;
+
     public static void main(String[] args) {
         int inputWId = 1, inputDId = 1, inputT = 1000, inputL = 20;
         StockLevel.executeQuery(inputWId, inputDId, inputT, inputL);
     }
 
-    public static void executeQuery(int inputWId, int inputDId, int inputT, int inputL) {
+    public void executeQuery(int inputWId, int inputDId, int inputT, int inputL) {
         Cluster cluster;
         Session session;
 
@@ -20,7 +22,7 @@ public class StockLevel {
         int N = 0, M = 0;
         for (Row row : results) {
             N = row.getInt("d_next_o_id");
-            M = N - 20;
+            M = N - inputL;
             System.out.format("N: %d\n", N);
             break;
         }

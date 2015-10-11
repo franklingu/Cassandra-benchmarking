@@ -6,6 +6,7 @@ import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
 
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by Wang Yu on 05-Oct-15.
@@ -18,18 +19,36 @@ public class PopularItem {
     private int D_ID;
     private int range;
 
-    public PopularItem(int w_id, int d_id, int range){
+    private Session session;
+    private PreparedStatement selectOrder;
+    private PreparedStatement selectCustomer;
+    private PreparedStatement selectOrderLine;
+    private PreparedStatement selectItem;
+    private PreparedStatement selectDistrict;
+
+    public PopularItem(Session session, int w_id, int d_id, int range){
         this.W_ID = w_id;
         this.D_ID = d_id;
         this.range = range;
+        this.session = session;
+        // select orders with o_id > nextOrderID - range
+        selectOrder = session.prepare("SELECT o_id, o_c_id, o_entry_d FROM orders "
+                + "WHERE o_w_id = ? AND o_d_id = ? AND o_id >= ?;");
+        // find customer whom placed this order
+        selectCustomer = session.prepare("SELECT c_first, c_middle, c_last FROM customers "
+                + "WHERE c_w_id = ? AND c_d_id = ? AND c_id = ?;");
+        // find order details from orderlines
+        selectOrderLine = session.prepare("SELECT ol_i_id, ol_quantity FROM orderlines "
+                + "WHERE ol_w_id = ? AND ol_d_id = ? AND ol_o_id = ?;");
+        selectItem = session.prepare("SELECT i_name FROM items WHERE i_id = ?;");
+
+        selectDistrict = session.prepare("SELECT d_next_o_id FROM districts WHERE d_w_id = ? AND d_id = ?;");
     }
 
-    public void findItem(Session session){
+    public void findItem(){
         // find next available order id in the district (D_W_ID,D_ID)
         int nextOrderID = findNextOrderID(session, W_ID, D_ID);
-        // select orders with o_id > nextOrderID - range
-        PreparedStatement selectOrder = session.prepare("SELECT o_id, o_c_id, o_entry_d FROM orders"
-                + "WHERE o_w_id = ? AND o_d_id = ? AND o_id >= ?;");
+
         ResultSet orders = session.execute(selectOrder.bind(W_ID, D_ID, nextOrderID - range));
 
         HashMap<Integer, Integer> itemCount = new HashMap<Integer, Integer>();
@@ -40,18 +59,13 @@ public class PopularItem {
             int orderID = order.getInt("o_id");
             int customerID = order.getInt("o_c_id");
 
-            // find customer whom placed this order
-            PreparedStatement selectCustomer = session.prepare("SELECT c_first, c_middle, c_last FROM customers"
-                    + "WHERE c_w_id = ? AND c_d_id = ? AND c_id = ?;");
+
             ResultSet customers = session.execute(selectCustomer.bind(W_ID, D_ID, customerID));
             Row customer = customers.all().get(0);
 
             System.out.println(String.format("Order Number: %d, Entry Date and Time: %s, Name: (%s %s %s),", orderID, order.getTimestamp("o_entry_d"),
                     customer.getString("c_first"), customer.getString("c_middle"), customer.getString("c_last")));
 
-            // find order details from orderlines
-            PreparedStatement selectOrderLine = session.prepare("SELECT ol_i_id, ol_quantity FROM orderlines"
-                    + "WHERE ol_w_id = ? AND ol_d_id = ? AND ol_o_id = ?;");
             ResultSet orderLines = session.execute(selectOrderLine.bind(W_ID, D_ID, orderID));
 
             int popularItmID = -1;
@@ -71,7 +85,6 @@ public class PopularItem {
             }
 
             // find popular item name from items
-            PreparedStatement selectItem = session.prepare("SELECT i_name FROM items WHERE i_id = ?;");
             ResultSet popularItems = session.execute(selectItem.bind(popularItmID));
             Row popularItem = popularItems.all().get(0);
             String itmName = popularItem.getString("i_name");
@@ -84,30 +97,29 @@ public class PopularItem {
         }
 
         for(Integer itmID : popularItms.keySet()){
-            System.out.print("Item:" + popularItms.get(itmID) + itemCount.get(itmID));
+            System.out.print("Item:" + popularItms.get(itmID) + itemCount.get(itmID) + "; ");
         }
     }
 
     private int findNextOrderID(Session session, int w_id, int d_id) {
-        PreparedStatement selectDistrict = session.prepare("SELECT d_next_o_id FROM districts"
-                                                            + "WHERE d_w_id = ? AND d_id = ?;");
-
         ResultSet result = session.execute(selectDistrict.bind(w_id, d_id));
 
-        if(result.all().size() == 0){
+        List<Row> districts = result.all();
+        if(districts.isEmpty()){
             return -1;
         }
-        Row district = result.all().get(0);
+        Row district = districts.get(0);
         return district.getInt("d_next_o_id");
     }
 
     public static void main(String[] args) {
         SimpleClient client = new SimpleClient();
         client.connect(LOCAL_HOST, DATABASE);
-        PopularItem popularItem = new PopularItem(1,1,5);
 
         Session session = client.getSession();
-        popularItem.findItem(session);
+        PopularItem popularItem = new PopularItem(session,1,1,5);
+
+        popularItem.findItem();
 
         client.close();
     }
