@@ -16,16 +16,19 @@ public class Delivery {
 
 
     public static void main(String[] args) {
-        int inputWId = 1, inputCarrierId = 1;
-        Delivery d = new Delivery(new SimpleClient());
-        d.executeQuery(inputWId, inputCarrierId);
+        int inputinputWId = 1, inputCarrierId = 7;
+        SimpleClient client = new SimpleClient();
+        client.connect("127.0.0.1", "cs4224");
+        Delivery d = new Delivery(client);
+        d.executeQuery(inputinputWId, inputCarrierId);
+        client.close();
     }
 
     public Delivery(SimpleClient client) {
         this.session = client.getSession();
 
-        this.selectMinOIdQuery = session.prepare("SELECT min(o_id) as min_o_id, o_w_id, o_d_id, o_c_id "
-                + "FROM Orders where o_w_id = ? AND o_carrier_id = 0;");
+        this.selectMinOIdQuery = session.prepare("SELECT min(o_id) as min_o_id, o_c_id "
+                + "FROM Orders where o_w_id = ? AND o_d_id = ? AND o_carrier_id = 0;");
         this.updateCarrierIdQuery = session.prepare("UPDATE Orders SET o_carrier_id = ? WHERE o_w_id = ? AND o_d_id = ?"
                 + " AND o_id = ?;");
         this.selectOlNumberQuery = session.prepare("SELECT ol_number, ol_amount FROM OrderLines WHERE ol_w_id = ? AND ol_d_id = ?"
@@ -39,39 +42,43 @@ public class Delivery {
     }
 
     public void executeQuery(int inputWId, int inputCarrierId) {
-        ResultSet results = session.execute(selectMinOIdQuery.bind(inputWId));
-        int minOId = 0;
-        int wId = 0, dId = 0, cId = 0;
-        for (Row row : results) {
-            minOId = row.getInt("min_o_id");
-            wId = row.getInt("o_w_id");
-            dId = row.getInt("o_d_id");
-            cId = row.getInt("o_c_id");
-            break;
+        for (int i = 1; i < 10; i++) {
+            int dId = i, cId = 0;
+            ResultSet results = session.execute(selectMinOIdQuery.bind(inputWId, dId));
+            int minOId = 0;
+            for (Row row : results) {
+                minOId = row.getInt("min_o_id");
+                cId = row.getInt("o_c_id");
+                break;
+            }
+            // System.out.format("MinOId: %d, CId: %d\n", minOId, cId);
+
+            session.execute(updateCarrierIdQuery.bind(inputCarrierId, inputWId, dId, minOId));
+
+            Date now = new Date();
+
+            results = session.execute(selectOlNumberQuery.bind(inputWId, dId, minOId));
+            float olSum = 0;
+            int olNumber = 0;
+            for (Row row : results) {
+                olSum += row.getDecimal("ol_amount").floatValue();
+                olNumber = row.getInt("ol_number");
+                // System.out.format("OLNumber: %d\n", olNumber);
+                session.execute(updateDeliveryDateQuery.bind(new Timestamp(now.getTime()), inputWId, dId, minOId, olNumber));
+            }
+
+            float cBalance = 0;
+            int cCnt = 0;
+            results = session.execute(selectBalanceCntQuery.bind(inputWId, dId, cId));
+            for (Row row : results) {
+                cBalance = row.getDecimal("c_balance").floatValue();
+                cCnt = row.getInt("c_delivery_cnt");
+            }
+            // System.out.format("CBalance: %f, cCnt: %d\n", cBalance, cCnt);
+            cBalance += olSum;
+            cCnt++;
+            session.execute(updateBalanceCntQuery.bind(new BigDecimal(cBalance), cCnt, inputWId, dId, cId));
         }
-
-        session.execute(updateCarrierIdQuery.bind(inputCarrierId, wId, dId, minOId));
-
-        Date now = new Date();
-
-        results = session.execute(selectOlNumberQuery.bind(wId, dId, minOId));
-        float olSum = 0;
-        int olNumber = 0;
-        for (Row row : results) {
-            olSum += row.getDecimal("ol_amount").floatValue();
-            olNumber = row.getInt("ol_number");
-            session.execute(updateDeliveryDateQuery.bind(new Timestamp(now.getTime()), wId, dId, minOId, olNumber));
-        }
-
-        float cBalance = 0;
-        int cCnt = 0;
-        results = session.execute(selectBalanceCntQuery.bind(wId, dId, cId));
-        for (Row row : results) {
-            cBalance = row.getDecimal("c_balance").floatValue();
-            cCnt = row.getInt("c_delivery_cnt");
-        }
-        cBalance += olSum;
-        cCnt++;
-        session.execute(updateBalanceCntQuery.bind(new BigDecimal(cBalance), cCnt, wId, dId, cId));
+        System.out.format("Done with Delivery\n\n");
     }
 }

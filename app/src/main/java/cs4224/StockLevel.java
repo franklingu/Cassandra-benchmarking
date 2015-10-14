@@ -9,8 +9,11 @@ public class StockLevel {
 
     public static void main(String[] args) {
         int inputWId = 1, inputDId = 1, inputT = 1000, inputL = 20;
-        StockLevel s = new StockLevel(new SimpleClient());
+        SimpleClient client = new SimpleClient();
+        client.connect("127.0.0.1", "cs4224");
+        StockLevel s = new StockLevel(client);
         s.executeQuery(inputWId, inputDId, inputT, inputL);
+        client.close();
     }
 
     public StockLevel(SimpleClient client) {
