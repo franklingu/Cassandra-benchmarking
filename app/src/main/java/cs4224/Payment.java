@@ -5,7 +5,6 @@ import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.PreparedStatement;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 
@@ -53,9 +52,9 @@ public class Payment {
             return;
         }
         Row warehouse = warehouses.get(0);
-        float newYTD = warehouse.getDecimal("w_ytd").floatValue() + amount;
+        float newYTD = warehouse.getFloat("w_ytd") + amount;
 
-        session.execute(updateWarehouse.bind(BigDecimal.valueOf(newYTD), w_id));
+        session.execute(updateWarehouse.bind(newYTD, w_id));
         // display warehouse address
         System.out.println("Warehouse Address:");
         System.out.println(String.format("Street: %s %s, City: %s, State: %s, ZIP: %s", warehouse.getString("w_street_1"),
@@ -70,9 +69,9 @@ public class Payment {
             return;
         }
         Row district = districts.get(0);
-        float newYTD = district.getDecimal("d_ytd").floatValue() + amount;
+        float newYTD = district.getFloat("d_ytd") + amount;
 
-        session.execute(updateDistrict.bind(BigDecimal.valueOf(newYTD), w_id, d_id));
+        session.execute(updateDistrict.bind(newYTD, w_id, d_id));
         // display district address
         System.out.println("District Address:");
         System.out.println(String.format("Street: %s %s, City: %s, State: %s, ZIP: %s", district.getString("d_street_1"),
@@ -88,18 +87,18 @@ public class Payment {
             return;
         }
         Row customer = customers.get(0);
-        float newBalance = customer.getDecimal("c_balance").floatValue() - amount;
+        float newBalance = customer.getFloat("c_balance") - amount;
         float newYTD = customer.getFloat("c_ytd_payment") + amount;
         int newCnt = customer.getInt("c_payment_cnt") + 1;
 
-        session.execute(updateCustomer.bind(BigDecimal.valueOf(newBalance), newYTD, newCnt, w_id, d_id, c_id));
+        session.execute(updateCustomer.bind(newBalance, newYTD, newCnt, w_id, d_id, c_id));
         // display district address
         System.out.println("Customer Information:");
         System.out.println(String.format("Customer ID: (%d,%d,%d), Name: (%s %s %s), Address: (%s,%s,%s,%s,%s)"
                         + "%s, %s, %s, %.2f, %.4f, %.2f", w_id, d_id, c_id, customer.getString("c_first"), customer.getString("c_middle"),
                         customer.getString("c_last"), customer.getString("c_street_1"), customer.getString("c_street_2"), customer.getString("c_city"),
                         customer.getString("c_state"), customer.getString("c_zip"), customer.getString("c_phone"), customer.getTimestamp("c_since"),
-                        customer.getString("c_credit"), customer.getDecimal("c_credit_lim"), customer.getDecimal("c_discount"), customer.getDecimal("c_balance")));
+                        customer.getString("c_credit"), customer.getFloat("c_credit_lim"), customer.getFloat("c_discount"), customer.getFloat("c_balance")));
         System.out.println("Payment Amount:" + amount);
     }
 

@@ -38,7 +38,7 @@ public class OrderStatus {
         Row customer = results.all().get(0);
         System.out.println("Customer Info:");
         System.out.println(String.format("Name: %s %s %s ,Balance: %.4f", customer.getString("c_first"), customer.getString("c_middle"),
-                customer.getString("c_middle"), customer.getDecimal("c_balance")));
+                customer.getString("c_middle"), customer.getFloat("c_balance")));
 
         // retrieve order information for this customer
         results = session.execute(orderQuery.bind(c_w_id, c_d_id, c_id));
@@ -68,7 +68,7 @@ public class OrderStatus {
         System.out.println("Items in this order:");
         for (Row row : results) {
             System.out.println(String.format("%d, %d, %d, %.4f, %s ",row.getInt("ol_i_id"), row.getInt("ol_supply_w_id"),
-                   row.getInt("ol_quantity"), row.getDecimal("ol_amount"), row.getTimestamp("ol_delivery_d")));
+                   row.getInt("ol_quantity"), row.getFloat("ol_amount"), row.getTimestamp("ol_delivery_d")));
         }
 
         System.out.println();

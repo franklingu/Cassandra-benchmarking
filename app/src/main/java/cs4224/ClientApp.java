@@ -13,7 +13,7 @@ public class ClientApp {
         int transactionFileNumber;
         if (args == null || args.length <= 0) {
             useD8 = true;
-            transactionFileNumber = 0;
+            transactionFileNumber = 1;
         } else {
             useD8 = (args[0].trim()).equals("D8");
             transactionFileNumber = Integer.parseInt(args[1]);

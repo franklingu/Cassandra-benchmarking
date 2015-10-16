@@ -59,7 +59,7 @@ public class PopularItem {
             for(Row orderLine: orderLines){
                 int quantity = orderLine.getInt("ol_quantity");
                 int itmID = orderLine.getInt("ol_i_id");
-                if( quantity > popularItmCnt ){
+                if( quantity >= popularItmCnt ){
                     popularItmCnt = quantity;
                     popularItmID = itmID;
                 }
@@ -69,16 +69,17 @@ public class PopularItem {
                     itemCount.put(itmID, itemCount.get(itmID) + 1);
                 }
             }
+            if (popularItmID != -1) {
+                // find popular item name from items
+                ResultSet popularItems = session.execute(selectItem.bind(popularItmID));
+                Row popularItem = popularItems.all().get(0);
+                String itmName = popularItem.getString("i_name");
+                System.out.println(String.format("Item Name: %s, Quantity: %d", itmName, popularItmCnt));
 
-            // find popular item name from items
-            ResultSet popularItems = session.execute(selectItem.bind(popularItmID));
-            Row popularItem = popularItems.all().get(0);
-            String itmName = popularItem.getString("i_name");
-            System.out.println(String.format("Item Name: %s, Quantity: %d", itmName, popularItmCnt));
-
-            // if not existing popular items add to them
-            if(!popularItms.containsKey(popularItmID)){
-                popularItms.put(popularItmID,itmName);
+                // if not existing popular items add to them
+                if(!popularItms.containsKey(popularItmID)){
+                    popularItms.put(popularItmID,itmName);
+                }
             }
         }
 
@@ -96,5 +97,15 @@ public class PopularItem {
         }
         Row district = districts.get(0);
         return district.getInt("d_next_o_id");
+    }
+
+    public static void main(String[] args) {
+        SimpleClient client = new SimpleClient();
+        client.connect("127.0.0.1", "cs4224");
+
+        PopularItem transaction = new PopularItem(client);
+        transaction.findItem(1, 1, 47);
+
+        client.close();
     }
 }

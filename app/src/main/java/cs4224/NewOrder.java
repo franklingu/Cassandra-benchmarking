@@ -5,7 +5,6 @@ import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -48,18 +47,18 @@ public class NewOrder {
         int orderNo = districtRow.getInt("d_next_o_id");
 
         // district tax
-        double district_tax = districtRow.getDecimal("d_tax").doubleValue();
+        float district_tax = districtRow.getFloat("d_tax");
 
         // get warehouse tax rate
         results = session.execute(warehouseQuery.bind(w_id));
         Row warehouseRow = results.one();
-        double warehouse_tax = warehouseRow.getDecimal("w_tax").doubleValue();
+        float warehouse_tax = warehouseRow.getFloat("w_tax");
 
         // get customer info
         results = session.execute(customerQuery.bind(w_id, d_id, c_id));
         Row customerRow = results.one();
 
-        double discount = customerRow.getDecimal("c_discount").doubleValue();
+        float discount = customerRow.getFloat("c_discount");
         String lastName = customerRow.getString("c_last");
         String credit = customerRow.getString("c_credit");
 
@@ -83,11 +82,11 @@ public class NewOrder {
         session.execute(createOrderQuery.bind(w_id, d_id, orderNo, c_id, null, num_items, isAllLocal, entryDate));
         System.out.println(String.format("Order number: %d, %s", orderNo, entryDate));
 
-        double totalAmount = 0.0;
+        float totalAmount = (float)0.0;
         int item, warehouse, request_quantity, s_order_cnt, s_remote_cnt, s_quantity, adjusted_quantity;
         String district_info, name;
-        double s_ytd;
-        double price, item_amount;
+        float s_ytd;
+        float price, item_amount;
         Row resultRow;
         ArrayList<String> outputInfo = new ArrayList<String>();
 
@@ -101,7 +100,7 @@ public class NewOrder {
             resultRow = results.one();
 
             s_quantity = resultRow.getInt("s_quantity");
-            s_ytd = resultRow.getDecimal("s_ytd").doubleValue();
+            s_ytd = resultRow.getFloat("s_ytd");
             s_order_cnt = resultRow.getInt("s_order_cnt");
             s_remote_cnt = resultRow.getInt("s_remote_cnt");
             district_info = resultRow.getString(4);
@@ -121,7 +120,7 @@ public class NewOrder {
             results = session.execute(String.format("select i_price, i_name from items where i_id = %d;", item));
 
             resultRow = results.one();
-            price = resultRow.getDecimal("i_price").doubleValue();
+            price = resultRow.getFloat("i_price");
             name = resultRow.getString("i_name");
             // calculate amount for this item
             item_amount = request_quantity * price;
@@ -129,7 +128,7 @@ public class NewOrder {
             totalAmount += item_amount;
 
             // create new order line
-            session.execute(createOrderLineQuery.bind(w_id, d_id, orderNo, i + 1, item, null, new BigDecimal(item_amount), warehouse, request_quantity, district_info));
+            session.execute(createOrderLineQuery.bind(w_id, d_id, orderNo, i + 1, item, null, item_amount, warehouse, request_quantity, district_info));
 
             // add output info
             outputInfo.add(String.format("Item: %d: %s, Warehouse %d. Quantity: %d. Amount: %.2f. Stock: %d", i + 1, name, warehouse, request_quantity, item_amount, s_quantity));

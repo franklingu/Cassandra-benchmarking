@@ -1,7 +1,5 @@
 package cs4224;
 import com.datastax.driver.core.*;
-
-import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.*;
 
@@ -61,7 +59,7 @@ public class Delivery {
             float olSum = 0;
             int olNumber = 0;
             for (Row row : results) {
-                olSum += row.getDecimal("ol_amount").floatValue();
+                olSum += row.getFloat("ol_amount");
                 olNumber = row.getInt("ol_number");
                 // System.out.format("OLNumber: %d\n", olNumber);
                 session.execute(updateDeliveryDateQuery.bind(new Timestamp(now.getTime()), inputWId, dId, minOId, olNumber));
@@ -71,13 +69,13 @@ public class Delivery {
             int cCnt = 0;
             results = session.execute(selectBalanceCntQuery.bind(inputWId, dId, cId));
             for (Row row : results) {
-                cBalance = row.getDecimal("c_balance").floatValue();
+                cBalance = row.getFloat("c_balance");
                 cCnt = row.getInt("c_delivery_cnt");
             }
             // System.out.format("CBalance: %f, cCnt: %d\n", cBalance, cCnt);
             cBalance += olSum;
             cCnt++;
-            session.execute(updateBalanceCntQuery.bind(new BigDecimal(cBalance), cCnt, inputWId, dId, cId));
+            session.execute(updateBalanceCntQuery.bind(cBalance, cCnt, inputWId, dId, cId));
         }
         System.out.format("Done with Delivery\n\n");
     }
