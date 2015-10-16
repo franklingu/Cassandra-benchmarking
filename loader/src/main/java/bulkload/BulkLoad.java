@@ -64,9 +64,9 @@ public class BulkLoad
             "C_PHONE varchar," +
             "C_SINCE timestamp," +
             "C_CREDIT varchar," +
-            "C_CREDIT_LIM decimal," +
-            "C_DISCOUNT decimal," +
-            "C_BALANCE decimal," +
+            "C_CREDIT_LIM float," +
+            "C_DISCOUNT float," +
+            "C_BALANCE float," +
             "C_YTD_PAYMENT float," +
             "C_PAYMENT_CNT int," +
             "C_DELIVERY_CNT int," +
@@ -88,7 +88,7 @@ public class BulkLoad
     public static final String SCHEMA3 = "CREATE TABLE cs4224.items (" +
             "I_ID int," +
             "I_NAME varchar," +
-            "I_PRICE decimal," +
+            "I_PRICE float," +
             "I_IM_ID int," +
             "I_DATA varchar," +
             "PRIMARY KEY (I_ID));";
@@ -100,7 +100,7 @@ public class BulkLoad
             "OL_NUMBER int," +
             "OL_I_ID int," +
             "OL_DELIVERY_D timestamp," +
-            "OL_AMOUNT decimal," +
+            "OL_AMOUNT float," +
             "OL_SUPPLY_W_ID int," +
             "OL_QUANTITY int," +
             "OL_DIST_INFO varchar," +
@@ -110,7 +110,7 @@ public class BulkLoad
             "S_W_ID int," +
             "S_I_ID int," +
             "S_QUANTITY int," +
-            "S_YTD decimal," +
+            "S_YTD float," +
             "S_ORDER_CNT int," +
             "S_REMOTE_CNT int," +
             "S_DIST_01 varchar," +
@@ -252,9 +252,9 @@ public class BulkLoad
                 }
                 args.add(arg12);
                 args.add(line.get(13));
-                args.add(new BigDecimal(line.get(14)));
-                args.add(new BigDecimal(line.get(15)));
-                args.add(new BigDecimal(line.get(16)));
+                args.add(Float.parseFloat(line.get(14)));
+                args.add(Float.parseFloat(line.get(15)));
+                args.add(Float.parseFloat(line.get(16)));
 
                 args.add(Float.parseFloat(line.get(17)));
 
@@ -289,7 +289,7 @@ public class BulkLoad
             case 2: // Items
                 args.add(Integer.parseInt(line.get(0)));
                 args.add(line.get(1));
-                args.add(new BigDecimal(line.get(2)));
+                args.add(Float.parseFloat(line.get(2)));
                 args.add(Integer.parseInt(line.get(3)));
                 args.add(line.get(4));
                 break;
@@ -306,7 +306,7 @@ public class BulkLoad
                     arg5 = null;
                 }
                 args.add(arg5);
-                args.add(new BigDecimal(line.get(6)));
+                args.add(Float.parseFloat(line.get(6)));
                 args.add(Integer.parseInt(line.get(7)));
                 args.add(Integer.parseInt(line.get(8)));  // ol_quantity
                 args.add(line.get(9));
@@ -316,7 +316,7 @@ public class BulkLoad
                 args.add(Integer.parseInt(line.get(1)));
 
                 args.add(Integer.parseInt(line.get(2)));  // s_quantity
-                args.add(new BigDecimal(line.get(3)));
+                args.add(Float.parseFloat(line.get(3)));
 
                 args.add(Integer.parseInt(line.get(4)));
                 args.add(Integer.parseInt(line.get(5)));

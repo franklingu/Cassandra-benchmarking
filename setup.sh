@@ -52,19 +52,19 @@ fi
 
 # Bulk Loader Build Phase
 cd ../loader
-echo "Bulkloader build start"
+echo "Bulkloader build start..."
 ./gradlew build
 echo "Bulkloader build success"
 
-echo "Bulkloader table creation start"
+echo "Bulkloader table creation start..."
 ./gradlew run
 echo "Bulkloader table creation success"
 
 # Schema Import Phase
 cd ../data/$data_op
-echo "Load schema"
+echo "Loading schema..."
 cqlsh -f ../../schema.cql
-echo "Load schema success"
+echo "Loading schema success"
 
 # Bulk Load Phase
 echo "Bulkloading..."

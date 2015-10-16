@@ -17,8 +17,8 @@ CREATE TABLE Warehouses (
 	W_CITY varchar,
 	W_STATE varchar,
 	W_ZIP varchar,
-	W_TAX decimal,
-	W_YTD decimal,
+	W_TAX float,
+	W_YTD float,
 	PRIMARY KEY (W_ID)
 );
 
@@ -31,8 +31,8 @@ CREATE TABLE Districts (
 	D_CITY varchar,
 	D_STATE varchar,
 	D_ZIP varchar,
-	D_TAX decimal,
-	D_YTD decimal,
+	D_TAX float,
+	D_YTD float,
 	D_NEXT_O_ID int,
 	PRIMARY KEY (D_W_ID, D_ID)
 );
@@ -52,9 +52,9 @@ CREATE TABLE Customers (
 	C_PHONE varchar,
 	C_SINCE timestamp,
 	C_CREDIT varchar,
-	C_CREDIT_LIM decimal,
-	C_DISCOUNT decimal,
-	C_BALANCE decimal,
+	C_CREDIT_LIM float,
+	C_DISCOUNT float,
+	C_BALANCE float,
 	C_YTD_PAYMENT float,
 	C_PAYMENT_CNT int,
 	C_DELIVERY_CNT int,
@@ -80,7 +80,7 @@ CREATE INDEX idx_o_carrier_id ON Orders (o_carrier_id);
 CREATE TABLE Items (
 	I_ID int,
 	I_NAME varchar,
-	I_PRICE decimal,
+	I_PRICE float,
 	I_IM_ID int,
 	I_DATA varchar,
 	PRIMARY KEY (I_ID)
@@ -93,7 +93,7 @@ CREATE TABLE OrderLines (
 	OL_NUMBER int,
 	OL_I_ID int,
 	OL_DELIVERY_D timestamp,
-	OL_AMOUNT decimal,
+	OL_AMOUNT float,
 	OL_SUPPLY_W_ID int,
 	OL_QUANTITY int,
 	OL_DIST_INFO varchar,
@@ -106,7 +106,7 @@ CREATE TABLE Stocks (
 	S_W_ID int,
 	S_I_ID int,
 	S_QUANTITY int,
-	S_YTD decimal,
+	S_YTD float,
 	S_ORDER_CNT int,
 	S_REMOTE_CNT int,
 	S_DIST_01 varchar,
