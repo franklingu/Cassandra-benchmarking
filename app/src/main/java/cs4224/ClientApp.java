@@ -42,8 +42,9 @@ public class ClientApp {
         PopularItem popular = new PopularItem(client);
 
         String pathTemplate = "../data/xact-spec-files/D%d-xact-files/%d.txt";
-        long startTime = System.nanoTime();
-        int totalTransactions = 0;
+        long[] timings = new long[6];
+        int[] transactionCounts = new int[6];
+        long startTime;
         File file = new File(String.format(pathTemplate, useD8 ? 8 : 40, transactionFileNumber));
         try {
             BufferedReader reader = new BufferedReader(new FileReader(file));
@@ -68,37 +69,54 @@ public class ClientApp {
                         supplierWarehouse[j] = Integer.parseInt(newParams[1]);
                         quantity[j] = Integer.parseInt(newParams[2]);
                     }
+                    startTime = System.nanoTime();
                     n.createOrder(wId, dId, cId, numItems, itemNumbers, supplierWarehouse, quantity);
+                    timings[0] = timings[0] + (System.nanoTime() - startTime);
+                    transactionCounts[0] = transactionCounts[0] + 1;
                 } else if (inputLine.charAt(0) == 'P') {
                     int wId = Integer.parseInt(params[1]);
                     int dId = Integer.parseInt(params[2]);
                     int cId = Integer.parseInt(params[3]);
                     float payment = Float.parseFloat(params[4]);
+                    startTime = System.nanoTime();
                     p.processPayment(wId, dId, cId, payment);
+                    timings[1] = timings[1] + (System.nanoTime() - startTime);
+                    transactionCounts[1] = transactionCounts[1] + 1;
                 } else if (inputLine.charAt(0) == 'D') {
                     int wId = Integer.parseInt(params[1]);
                     int carrierId = Integer.parseInt(params[2]);
+                    startTime = System.nanoTime();
                     d.executeQuery(wId, carrierId);
+                    timings[2] = timings[2] + (System.nanoTime() - startTime);
+                    transactionCounts[2] = transactionCounts[2] + 1;
                 } else if (inputLine.charAt(0) == 'O') { // Order Status
                     int wId = Integer.parseInt(params[1]);
                     int dId = Integer.parseInt(params[2]);
                     int cId = Integer.parseInt(params[3]);
+                    startTime = System.nanoTime();
                     o.getOrderStatus(wId, dId, cId);
+                    timings[3] = timings[3] + (System.nanoTime() - startTime);
+                    transactionCounts[3] = transactionCounts[3] + 1;
                 } else if (inputLine.charAt(0) == 'S') {
                     int wId = Integer.parseInt(params[1]);
                     int dId = Integer.parseInt(params[2]);
                     int T = Integer.parseInt(params[3]);
                     int L = Integer.parseInt(params[4]);
+                    startTime = System.nanoTime();
                     s.executeQuery(wId, dId, T, L);
+                    timings[4] = timings[4] + (System.nanoTime() - startTime);
+                    transactionCounts[4] = transactionCounts[4] + 1;
                 } else if (inputLine.charAt(0) == 'I') {
                     int wId = Integer.parseInt(params[1]);
                     int dId = Integer.parseInt(params[2]);
                     int L = Integer.parseInt(params[3]);
+                    startTime = System.nanoTime();
                     popular.findItem(wId, dId, L);
+                    timings[5] = timings[5] + (System.nanoTime() - startTime);
+                    transactionCounts[5] = transactionCounts[5] + 1;
                 } else {
-                    System.out.println("\n\nSeems the way of reading of file is wrong\n\n");
+                    System.err.println("\n\nSeems the way of reading of file is wrong\n\n");
                 }
-                totalTransactions++;
                 System.out.println(); // new line
                 inputLine = reader.readLine();
             }
@@ -106,12 +124,27 @@ public class ClientApp {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        long endTime = System.nanoTime();
-        long duration = (endTime - startTime) / 1000000000;
-        System.err.println(String.format("Total Transactions: %d", totalTransactions));
-        System.err.println(String.format("Time used: %d s", duration));
-        System.err.println(String.format("Throughput: %.4f", totalTransactions / (float)duration));
         client.close();
+
+        float totalTiming = (float)0.0;
+        float duration;
+        float throughput;
+        int totalCounts = 0;
+        for (int i = 0; i < 6; i++) {
+            if (transactionCounts[i] == 0) {
+                continue;
+            }
+            duration = (float)timings[1] / 1000000000;
+            throughput = (float)(transactionCounts[i]) / duration;
+            totalTiming = totalTiming + duration;
+            totalCounts = totalCounts + transactionCounts[i];
+            System.err.println(String.format("Type %d: Total Transactions: %d", i, transactionCounts[i]));
+            System.err.println(String.format("Type %d: Time used: %f s", i, duration));
+            System.err.println(String.format("Type %d: Throughput: %f", i, throughput));
+        }
+        throughput = (float)totalCounts / totalTiming;
+        System.err.println(String.format("Overall: Total Transactions: %d", totalCounts));
+        System.err.println(String.format("Overall: Time used: %f s", totalTiming));
+        System.err.println(String.format("Overall: Throughput: %f", throughput));
     }
 }
