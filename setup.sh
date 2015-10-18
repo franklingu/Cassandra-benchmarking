@@ -57,7 +57,7 @@ echo "Bulkloader build start..."
 echo "Bulkloader build success"
 
 echo "Bulkloader table creation start..."
-./gradlew run
+./gradlew run -Pdataset=$data_op
 echo "Bulkloader table creation success"
 
 # Schema Import Phase

@@ -175,7 +175,7 @@ public class BulkLoad
         }
 
         String datasetToUse = args[0];
-
+        System.out.println("\n\n\n\nUsing dataset " + datasetToUse + "\n\n\n\n");
         // magic!
         Config.setClientMode(true);
         String[] fileNames = {"customer", "order", "item", "order-line", "stock"};
