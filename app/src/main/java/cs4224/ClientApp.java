@@ -134,7 +134,7 @@ public class ClientApp {
             if (transactionCounts[i] == 0) {
                 continue;
             }
-            duration = (float)timings[1] / 1000000000;
+            duration = (float)timings[i] / 1000000000;
             throughput = (float)(transactionCounts[i]) / duration;
             totalTiming = totalTiming + duration;
             totalCounts = totalCounts + transactionCounts[i];
