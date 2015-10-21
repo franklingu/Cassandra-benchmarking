@@ -1,6 +1,6 @@
 #!/bin/bash
 mvn install
-mvn build
+mvn compile
 rm -rf log
 mkdir log
 echo "Starting simulating clients..."
