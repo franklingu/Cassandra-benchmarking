@@ -13,6 +13,23 @@ This is a benchmarking of different modeling of the same data set and same query
 
 Note: *During our testing, sometimes the ```drop keyspace cs4224;``` cql command may fail. So it is advisable for you to manually make sure it actually succeeds*
 
+### Linking Up Two Nodes
+compg27(inside casssandra.yaml):
+initial_token: 0
+- seeds: "192.168.8.159"
+listen_address: 192.168.8.159
+rpc_address: 0.0.0.0
+broadcast_rpc_address: 192.168.9.255
+
+compg28(inside casssandra.yaml):
+initial_token: -9223372036854775808
+- seeds: "192.168.8.159"
+listen_address: 192.168.8.158
+rpc_address: 0.0.0.0
+broadcast_rpc_address: 192.168.9.255
+
+Note: token values are calculated based on Murmur3Partitioner
+
 ### Benchmarking
 1. Navigate to app folder and run ```./launcher.sh``` to create some number of clients and compile benchmarking results after all sub processes exit. (Note that you are supposed to change the number in launcher script for the desired number of clients as you want. e.g.: ```for i in `seq 1 10`;``` means you want to run 10 clients at the same time) 
 
