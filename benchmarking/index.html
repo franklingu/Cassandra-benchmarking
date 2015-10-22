@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<meta charset='utf-8'>
+<style type='text/css'>
+  .axis path, .axis line {
+    fill: none;
+    stroke: #777;
+    shape-rendering: crispEdges;
+  } 
+  .axis text {
+    font-family: 'Arial';
+    font-size: 13px;
+  }
+  .tick {
+    stroke-dasharray: 1, 2;
+  }
+  .bar {
+    fill: FireBrick;
+  }
+  #visualisation {
+    margin: 0 auto;
+  }
+</style>
+<body>
+<svg id='visualisation' width='1000' height='500'></svg>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js'></script>
+<script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
+<script>
+function initChart(barData) {
+  var vis = d3.select('#visualisation'),
+    WIDTH = 1000,
+    HEIGHT = 500,
+    MARGINS = {
+      top: 20,
+      right: 20,
+      bottom: 20,
+      left: 50
+    };
+
+  var xRange = d3.scale.ordinal().rangeRoundBands([MARGINS.left, WIDTH - MARGINS.right], 0.1).domain(barData.map(function (d) {
+      return d.x;
+    })),
+    yRange = d3.scale.linear().range([HEIGHT - MARGINS.top, MARGINS.bottom]).domain([0,
+      d3.max(barData, function (d) {
+        return d.y;
+      })
+    ]);
+
+  var xAxis = d3.svg.axis()
+      .scale(xRange)
+      .tickSize(5)
+      .tickSubdivide(true),
+    yAxis = d3.svg.axis()
+      .scale(yRange)
+      .tickSize(5)
+      .orient('left')
+      .tickSubdivide(true);
+
+  var tip = d3.tip()
+  .attr('class', 'd3-tip')
+  .offset([-10, 0])
+  .html(function(d) {
+    return "Type: <span style='color:red'>" + d.label + "</span> Value: <span style='color:red'>" + Math.round(d.y*100)/100 + "</span>";
+  });
+  vis.call(tip);
+
+  vis.append('svg:g')
+    .attr('class', 'x axis')
+    .attr('transform', 'translate(0,' + (HEIGHT - MARGINS.bottom) + ')')
+    .call(xAxis);
+
+  vis.append('svg:g')
+    .attr('class', 'y axis')
+    .attr('transform', 'translate(' + (MARGINS.left) + ',0)')
+    .call(yAxis);
+
+  vis.selectAll('rect')
+    .data(barData)
+    .enter()
+    .append('rect')
+    .attr('x', function (d) {
+      return xRange(d.x);
+    })
+    .attr('y', function (d) {
+      return yRange(d.y);
+    })
+    .attr('width', xRange.rangeBand())
+    .attr('height', function (d) {
+      return ((HEIGHT - MARGINS.bottom) - yRange(d.y));
+    })
+    .attr('fill', 'grey')
+    .on('mouseover',function(d){
+      d3.select(this)
+        .attr('fill','blue');
+    })
+    .on('mouseout',function(d){
+      d3.select(this)
+        .attr('fill','grey');
+    })
+    .on('mouseover', tip.show)
+    .on('mouseout', tip.hide);
+}
+
+$.getJSON('compilation.json', function( data ) {
+  var barData = [];
+  var idx = 0;
+  $.each(data, function (key, val) {
+    $.each(val, function (key1, val1) {
+      barData.push({x: idx++, y: val1.Throughput, label: key + ' ' + key1 });
+    });
+  });
+  console.log(barData);
+  barData.sort(function (a, b) {
+    return a.x - b.x;
+  });
+  initChart(barData);
+});
+</script>
