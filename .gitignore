@@ -65,5 +65,6 @@ crashlytics-build.properties
 # ignore import folder, which is for bulkloader's created table files.
 /import
 
-# ignore compiled json results
+# ignore compiled results
 compilation.json
+compilation.csv

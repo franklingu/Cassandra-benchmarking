@@ -41,3 +41,11 @@ if __name__ == '__main__':
     print json.dumps(results, indent=4, separators=(',', ': '))
     with open('compilation.json', 'w') as outfile:
         json.dump(results, outfile, sort_keys=True, indent=4, separators=(',', ': '))
+    rows = [['Type', 'Total Transactions', 'Time used', 'Throughput']]
+    for key, value in results.iteritems():
+        rows.append([key, '-', '-', '-'])
+        for k1, v1 in value.iteritems():
+            rows.append([k1, v1['Total Transactions'], v1['Time used'], v1['Throughput']])
+    with open('compilation.csv', 'wb') as f:
+        writer = csv.writer(f)
+        writer.writerows(rows)
