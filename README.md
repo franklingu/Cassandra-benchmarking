@@ -18,15 +18,15 @@ compg27(inside casssandra.yaml):
 initial_token: 0
 - seeds: "192.168.8.159"
 listen_address: 192.168.8.159
-rpc_address: 0.0.0.0
-broadcast_rpc_address: 192.168.9.255
+rpc_address: 192.168.8.159
+#broadcast_rpc_address: 192.168.9.255
 
 compg28(inside casssandra.yaml):
 initial_token: -9223372036854775808
 - seeds: "192.168.8.159"
 listen_address: 192.168.8.158
-rpc_address: 0.0.0.0
-broadcast_rpc_address: 192.168.9.255
+rpc_address: 192.168.8.158
+#broadcast_rpc_address: 192.168.9.255
 
 Note: token values are calculated based on Murmur3Partitioner
 
