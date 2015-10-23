@@ -72,6 +72,6 @@ cd ../../
 tableNames="customers orders items orderlines stocks"
 for name in $tableNames  # Note: No quotes
 do
-  sstableloader -d localhost import/cs4224/$name
+  sstableloader -d 192.168.8.159 import/cs4224/$name # on compg27
 done
 echo "Initialization Successful"

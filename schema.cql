@@ -5,7 +5,7 @@
 DROP KEYSPACE IF EXISTS cs4224;
 
 -- Create Namespace
-CREATE KEYSPACE cs4224 WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 1 };
+CREATE KEYSPACE cs4224 WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 2 };
 use cs4224;
 
 -- Create table

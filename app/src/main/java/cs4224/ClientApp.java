@@ -31,7 +31,7 @@ public class ClientApp {
     public void runQueries() {
         // Initialize connector
         SimpleClient client = new SimpleClient();
-        client.connect("127.0.0.1", "cs4224");
+        client.connect("192.168.8.159", "cs4224");
 
         // Initialize transaction
         NewOrder n = new NewOrder(client);
