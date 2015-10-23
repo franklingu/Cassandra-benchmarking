@@ -1,0 +1,161 @@
+Type,Measurement 1,Data 1,Measurement 2,Data 2,Measurement 3,Data 3
+Type 0,Total Transactions,102,Time used,9.928185,Throughput,10.273782
+Type 1,Total Transactions,84,Time used,0.896198,Throughput,93.729309
+Type 2,Total Transactions,10,Time used,58.518467,Throughput,0.170886
+Type 3,Total Transactions,8,Time used,0.088044,Throughput,90.864159
+Type 4,Total Transactions,8,Time used,7.252882,Throughput,1.103010
+Type 5,Total Transactions,10,Time used,3.033663,Throughput,3.296345
+Overall,Total Transactions,222,Time used,79.717438,Throughput,2.784836
+-,-,-,-,-,-,-
+Type 0,Total Transactions,96,Time used,8.854939,Throughput,10.841407
+Type 1,Total Transactions,90,Time used,0.801329,Throughput,112.313438
+Type 2,Total Transactions,10,Time used,65.828743,Throughput,0.151909
+Type 3,Total Transactions,8,Time used,0.092987,Throughput,86.033287
+Type 4,Total Transactions,13,Time used,21.057184,Throughput,0.617366
+Type 5,Total Transactions,7,Time used,2.065011,Throughput,3.389812
+Overall,Total Transactions,224,Time used,98.700188,Throughput,2.269499
+-,-,-,-,-,-,-
+Type 0,Total Transactions,108,Time used,14.052794,Throughput,7.685304
+Type 1,Total Transactions,72,Time used,0.675923,Throughput,106.521088
+Type 2,Total Transactions,12,Time used,79.218399,Throughput,0.151480
+Type 3,Total Transactions,11,Time used,0.154125,Throughput,71.370445
+Type 4,Total Transactions,5,Time used,4.584959,Throughput,1.090522
+Type 5,Total Transactions,2,Time used,0.565075,Throughput,3.539350
+Overall,Total Transactions,210,Time used,99.251282,Throughput,2.115842
+-,-,-,-,-,-,-
+Type 0,Total Transactions,93,Time used,11.432986,Throughput,8.134357
+Type 1,Total Transactions,86,Time used,1.485959,Throughput,57.875080
+Type 2,Total Transactions,9,Time used,55.923801,Throughput,0.160933
+Type 3,Total Transactions,13,Time used,0.176238,Throughput,73.764084
+Type 4,Total Transactions,10,Time used,18.541677,Throughput,0.539326
+Type 5,Total Transactions,8,Time used,2.159168,Throughput,3.705130
+Overall,Total Transactions,219,Time used,89.719833,Throughput,2.440932
+-,-,-,-,-,-,-
+Type 0,Total Transactions,103,Time used,9.283998,Throughput,11.094358
+Type 1,Total Transactions,78,Time used,0.763067,Throughput,102.219055
+Type 2,Total Transactions,7,Time used,34.705368,Throughput,0.201698
+Type 3,Total Transactions,11,Time used,0.152046,Throughput,72.346443
+Type 4,Total Transactions,9,Time used,10.696754,Throughput,0.841377
+Type 5,Total Transactions,8,Time used,2.132447,Throughput,3.751559
+Overall,Total Transactions,216,Time used,57.733681,Throughput,3.741317
+-,-,-,-,-,-,-
+Type 0,Total Transactions,87,Time used,8.181553,Throughput,10.633678
+Type 1,Total Transactions,96,Time used,1.041985,Throughput,92.131874
+Type 2,Total Transactions,12,Time used,54.294205,Throughput,0.221018
+Type 3,Total Transactions,15,Time used,0.218526,Throughput,68.641640
+Type 4,Total Transactions,13,Time used,15.341562,Throughput,0.847371
+Type 5,Total Transactions,13,Time used,3.436788,Throughput,3.782602
+Overall,Total Transactions,236,Time used,82.514618,Throughput,2.860099
+-,-,-,-,-,-,-
+Type 0,Total Transactions,89,Time used,7.140324,Throughput,12.464421
+Type 1,Total Transactions,96,Time used,0.847793,Throughput,113.235153
+Type 2,Total Transactions,12,Time used,65.334999,Throughput,0.183669
+Type 3,Total Transactions,5,Time used,0.050540,Throughput,98.931610
+Type 4,Total Transactions,7,Time used,9.365114,Throughput,0.747455
+Type 5,Total Transactions,7,Time used,1.352265,Throughput,5.176500
+Overall,Total Transactions,216,Time used,84.091026,Throughput,2.568645
+-,-,-,-,-,-,-
+Type 0,Total Transactions,96,Time used,12.688795,Throughput,7.565730
+Type 1,Total Transactions,96,Time used,0.888357,Throughput,108.064697
+Type 2,Total Transactions,11,Time used,66.161301,Throughput,0.166260
+Type 3,Total Transactions,10,Time used,0.102936,Throughput,97.147812
+Type 4,Total Transactions,16,Time used,19.306536,Throughput,0.828735
+Type 5,Total Transactions,7,Time used,1.585809,Throughput,4.414152
+Overall,Total Transactions,236,Time used,100.733727,Throughput,2.342810
+-,-,-,-,-,-,-
+Type 0,Total Transactions,97,Time used,8.723752,Throughput,11.119069
+Type 1,Total Transactions,91,Time used,0.921581,Throughput,98.743393
+Type 2,Total Transactions,12,Time used,56.764225,Throughput,0.211401
+Type 3,Total Transactions,13,Time used,0.198300,Throughput,65.557175
+Type 4,Total Transactions,9,Time used,9.278516,Throughput,0.969983
+Type 5,Total Transactions,5,Time used,1.046656,Throughput,4.777118
+Overall,Total Transactions,227,Time used,76.933037,Throughput,2.950618
+-,-,-,-,-,-,-
+Type 0,Total Transactions,92,Time used,10.091315,Throughput,9.116750
+Type 1,Total Transactions,95,Time used,2.915267,Throughput,32.587070
+Type 2,Total Transactions,8,Time used,37.845592,Throughput,0.211385
+Type 3,Total Transactions,10,Time used,0.169538,Throughput,58.983742
+Type 4,Total Transactions,5,Time used,9.211926,Throughput,0.542775
+Type 5,Total Transactions,9,Time used,10.719626,Throughput,0.839581
+Overall,Total Transactions,219,Time used,70.953262,Throughput,3.086539
+-,-,-,-,-,-,-
+Type 0,Total Transactions,95,Time used,9.525606,Throughput,9.973119
+Type 1,Total Transactions,88,Time used,0.924608,Throughput,95.175491
+Type 2,Total Transactions,7,Time used,36.256199,Throughput,0.193070
+Type 3,Total Transactions,8,Time used,0.118302,Throughput,67.623825
+Type 4,Total Transactions,9,Time used,11.116899,Throughput,0.809578
+Type 5,Total Transactions,8,Time used,1.951906,Throughput,4.098559
+Overall,Total Transactions,215,Time used,59.893517,Throughput,3.589704
+-,-,-,-,-,-,-
+Type 0,Total Transactions,95,Time used,8.607358,Throughput,11.037068
+Type 1,Total Transactions,99,Time used,0.996554,Throughput,99.342300
+Type 2,Total Transactions,3,Time used,14.493334,Throughput,0.206992
+Type 3,Total Transactions,14,Time used,0.179038,Throughput,78.195740
+Type 4,Total Transactions,5,Time used,6.695544,Throughput,0.746765
+Type 5,Total Transactions,7,Time used,1.898359,Throughput,3.687396
+Overall,Total Transactions,223,Time used,32.870186,Throughput,6.784264
+-,-,-,-,-,-,-
+Type 0,Total Transactions,97,Time used,16.059452,Throughput,6.040057
+Type 1,Total Transactions,91,Time used,1.046564,Throughput,86.951180
+Type 2,Total Transactions,5,Time used,44.817692,Throughput,0.111563
+Type 3,Total Transactions,7,Time used,0.088270,Throughput,79.302063
+Type 4,Total Transactions,9,Time used,9.873415,Throughput,0.911539
+Type 5,Total Transactions,9,Time used,1.951226,Throughput,4.612484
+Overall,Total Transactions,218,Time used,73.836617,Throughput,2.952465
+-,-,-,-,-,-,-
+Type 0,Total Transactions,92,Time used,8.550724,Throughput,10.759323
+Type 1,Total Transactions,96,Time used,1.254378,Throughput,76.531929
+Type 2,Total Transactions,6,Time used,34.708286,Throughput,0.172869
+Type 3,Total Transactions,9,Time used,0.146085,Throughput,61.607834
+Type 4,Total Transactions,10,Time used,10.443133,Throughput,0.957567
+Type 5,Total Transactions,3,Time used,0.514615,Throughput,5.829601
+Overall,Total Transactions,216,Time used,55.617222,Throughput,3.883689
+-,-,-,-,-,-,-
+Type 0,Total Transactions,95,Time used,10.868999,Throughput,8.740456
+Type 1,Total Transactions,85,Time used,2.388252,Throughput,35.590878
+Type 2,Total Transactions,8,Time used,64.540878,Throughput,0.123952
+Type 3,Total Transactions,11,Time used,0.169641,Throughput,64.842957
+Type 4,Total Transactions,10,Time used,12.282129,Throughput,0.814191
+Type 5,Total Transactions,3,Time used,2.289518,Throughput,1.310319
+Overall,Total Transactions,212,Time used,92.539413,Throughput,2.290916
+-,-,-,-,-,-,-
+Type 0,Total Transactions,100,Time used,8.781284,Throughput,11.387856
+Type 1,Total Transactions,81,Time used,0.816262,Throughput,99.232811
+Type 2,Total Transactions,15,Time used,79.134766,Throughput,0.189550
+Type 3,Total Transactions,6,Time used,0.089832,Throughput,66.791595
+Type 4,Total Transactions,10,Time used,20.704107,Throughput,0.482996
+Type 5,Total Transactions,7,Time used,1.158514,Throughput,6.042223
+Overall,Total Transactions,219,Time used,110.684769,Throughput,1.978592
+-,-,-,-,-,-,-
+Type 0,Total Transactions,99,Time used,9.411925,Throughput,10.518571
+Type 1,Total Transactions,89,Time used,0.956553,Throughput,93.042435
+Type 2,Total Transactions,5,Time used,25.268126,Throughput,0.197878
+Type 3,Total Transactions,11,Time used,0.138782,Throughput,79.260727
+Type 4,Total Transactions,10,Time used,11.074400,Throughput,0.902983
+Type 5,Total Transactions,10,Time used,2.498348,Throughput,4.002644
+Overall,Total Transactions,224,Time used,49.348133,Throughput,4.539179
+-,-,-,-,-,-,-
+Type 0,Total Transactions,108,Time used,18.765797,Throughput,5.755151
+Type 1,Total Transactions,75,Time used,0.862723,Throughput,86.933998
+Type 2,Total Transactions,11,Time used,61.248634,Throughput,0.179596
+Type 3,Total Transactions,11,Time used,0.118810,Throughput,92.584908
+Type 4,Total Transactions,11,Time used,16.104765,Throughput,0.683028
+Type 5,Total Transactions,5,Time used,0.826657,Throughput,6.048460
+Overall,Total Transactions,221,Time used,97.927391,Throughput,2.256774
+-,-,-,-,-,-,-
+Type 0,Total Transactions,95,Time used,9.378153,Throughput,10.129927
+Type 1,Total Transactions,91,Time used,0.889405,Throughput,102.315628
+Type 2,Total Transactions,9,Time used,72.097130,Throughput,0.124832
+Type 3,Total Transactions,6,Time used,0.070621,Throughput,84.960594
+Type 4,Total Transactions,10,Time used,12.630453,Throughput,0.791737
+Type 5,Total Transactions,14,Time used,3.923198,Throughput,3.568518
+Overall,Total Transactions,225,Time used,98.988953,Throughput,2.272981
+-,-,-,-,-,-,-
+Type 0,Total Transactions,85,Time used,6.195409,Throughput,13.719836
+Type 1,Total Transactions,90,Time used,0.745517,Throughput,120.721512
+Type 2,Total Transactions,22,Time used,106.046165,Throughput,0.207457
+Type 3,Total Transactions,13,Time used,0.166413,Throughput,78.119102
+Type 4,Total Transactions,10,Time used,8.505785,Throughput,1.175670
+Type 5,Total Transactions,13,Time used,2.579037,Throughput,5.040640
+Overall,Total Transactions,233,Time used,124.238327,Throughput,1.875428
+-,-,-,-,-,-,-
