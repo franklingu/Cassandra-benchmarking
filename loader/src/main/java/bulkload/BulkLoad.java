@@ -70,8 +70,14 @@ public class BulkLoad
             "C_YTD_PAYMENT float," +
             "C_PAYMENT_CNT int," +
             "C_DELIVERY_CNT int," +
+            "PRIMARY KEY ((C_W_ID, C_D_ID), C_ID));";
+    
+    public static final String SCHEMA1_UNUSED = "CREATE TABLE cs4224.customers_unused (" +
+            "C_W_ID int," +
+            "C_D_ID int," +
+            "C_ID int," +
             "C_DATA varchar," +
-            "PRIMARY KEY (C_W_ID, C_D_ID, C_ID));";
+            "PRIMARY KEY ((C_W_ID, C_D_ID), C_ID));";
 
     public static final String SCHEMA2 = "CREATE TABLE cs4224.orders (" +
             "O_W_ID int," +
@@ -82,13 +88,17 @@ public class BulkLoad
             "O_OL_CNT int," +
             "O_ALL_LOCAL int," +
             "O_ENTRY_D timestamp," +
-            "PRIMARY KEY (O_W_ID, O_D_ID, O_ID));";
+            "PRIMARY KEY ((O_W_ID, O_D_ID), O_ID));";
 
 
     public static final String SCHEMA3 = "CREATE TABLE cs4224.items (" +
             "I_ID int," +
             "I_NAME varchar," +
             "I_PRICE float," +
+            "PRIMARY KEY (I_ID));";
+
+    public static final String SCHEMA3_UNUSED = "CREATE TABLE cs4224.items_unused (" +
+            "I_ID int," +
             "I_IM_ID int," +
             "I_DATA varchar," +
             "PRIMARY KEY (I_ID));";
@@ -104,7 +114,7 @@ public class BulkLoad
             "OL_SUPPLY_W_ID int," +
             "OL_QUANTITY int," +
             "OL_DIST_INFO varchar," +
-            "PRIMARY KEY (OL_W_ID, OL_D_ID, OL_O_ID, OL_NUMBER));";
+            "PRIMARY KEY ((OL_W_ID, OL_D_ID), OL_O_ID, OL_NUMBER));";
 
     public static final String SCHEMA5 = "CREATE TABLE cs4224.stocks (" +
             "S_W_ID int," +
@@ -123,6 +133,11 @@ public class BulkLoad
             "S_DIST_08 varchar," +
             "S_DIST_09 varchar," +
             "S_DIST_10 varchar," +
+            "PRIMARY KEY (S_W_ID, S_I_ID));";
+
+    public static final String SCHEMA5_UNUSED = "CREATE TABLE cs4224.stocks_unused (" +
+            "S_W_ID int," +
+            "S_I_ID int," +
             "S_DATA text," +
             "PRIMARY KEY (S_W_ID, S_I_ID));";
 
@@ -131,11 +146,17 @@ public class BulkLoad
      * It is like prepared statement. You fill in place holder for each data.
      */
     public static final String INSERT_STMT1 = "INSERT INTO cs4224.customers (" +
-            "c_w_id, c_d_id, c_id, c_first, c_middle, c_last,c_street_1, c_street_2, c_city, " +
+            "c_w_id, c_d_id, c_id, c_first, c_middle, c_last, c_street_1, c_street_2, c_city, " +
             "c_state, c_zip, c_phone, c_since, c_credit, c_credit_lim, c_discount, c_balance, " +
-            "c_ytd_payment, c_payment_cnt, c_delivery_cnt, c_data " +
+            "c_ytd_payment, c_payment_cnt, c_delivery_cnt" +
             ") VALUES (" +
-            "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?" +
+            "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?" +
+            ");";
+
+    public static final String INSERT_STMT1_UNUSED = "INSERT INTO cs4224.customers_unused (" +
+            "c_w_id, c_d_id, c_id, c_data " +
+            ") VALUES (" +
+            "?, ?, ?, ?" +
             ");";
 
     public static final String INSERT_STMT2 = "INSERT INTO cs4224.orders (" +
@@ -145,11 +166,16 @@ public class BulkLoad
             ");";
 
     public static final String INSERT_STMT3 = "INSERT INTO cs4224.items (" +
-            "i_id, i_name, i_price, i_im_id, i_data" +
+            "i_id, i_name, i_price" +
             ") VALUES (" +
-            " ?, ?, ?, ?, ?" +
+            " ?, ?, ?" +
             ");";
 
+    public static final String INSERT_STMT3_UNUSED = "INSERT INTO cs4224.items_unused (" +
+            "i_id, i_im_id, i_data" +
+            ") VALUES (" +
+            " ?, ?, ?" +
+            ");";
 
     public static final String INSERT_STMT4 = "INSERT INTO cs4224.orderlines (" +
             "ol_w_id, ol_d_id, ol_o_id, ol_number, ol_i_id, ol_delivery_d, ol_amount, ol_supply_w_id, ol_quantity, ol_dist_info" +
@@ -158,9 +184,15 @@ public class BulkLoad
             ");";
 
     public static final String INSERT_STMT5 = "INSERT INTO cs4224.stocks (" +
-            "s_w_id, s_i_id, s_quantity, s_ytd, s_order_cnt, s_remote_cnt, s_dist_01, s_dist_02, s_dist_03, s_dist_04, s_dist_05, s_dist_06, s_dist_07, s_dist_08, s_dist_09, s_dist_10, s_data" +
+            "s_w_id, s_i_id, s_quantity, s_ytd, s_order_cnt, s_remote_cnt, s_dist_01, s_dist_02, s_dist_03, s_dist_04, s_dist_05, s_dist_06, s_dist_07, s_dist_08, s_dist_09, s_dist_10" +
             ") VALUES (" +
-            "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?" +
+            "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?" +
+            ");";
+
+    public static final String INSERT_STMT5_UNUSED = "INSERT INTO cs4224.stocks_unused (" +
+            "s_w_id, s_i_id, s_data" +
+            ") VALUES (" +
+            "?, ?, ?" +
             ");";
 
     public static void main(String[] args) {
@@ -178,10 +210,11 @@ public class BulkLoad
         System.out.println("\n\n\n\nUsing dataset " + datasetToUse + "\n\n\n\n");
         // magic!
         Config.setClientMode(true);
-        String[] fileNames = {"customer", "order", "item", "order-line", "stock"};
-        String[] tableNames = {"customers", "orders", "items", "orderlines", "stocks"};
-        String[] schemaTable = {SCHEMA1,SCHEMA2, SCHEMA3, SCHEMA4, SCHEMA5};
-        String[] insertStatementTable = {INSERT_STMT1, INSERT_STMT2, INSERT_STMT3, INSERT_STMT4, INSERT_STMT5};
+        String[] fileNames = {"customer", "customer", "order", "item", "item",  "order-line", "stock", "stock"};
+        String[] tableNames = {"customers", "customers_unused", "orders", "items", "items_unused", "orderlines", "stocks", "stocks_unused"};
+        String[] schemaTable = {SCHEMA1, SCHEMA1_UNUSED, SCHEMA2, SCHEMA3, SCHEMA3_UNUSED, SCHEMA4, SCHEMA5, SCHEMA5_UNUSED};
+        String[] insertStatementTable = {INSERT_STMT1, INSERT_STMT1_UNUSED, INSERT_STMT2, INSERT_STMT3, INSERT_STMT3_UNUSED, 
+                                            INSERT_STMT4, INSERT_STMT5, INSERT_STMT5_UNUSED};
 
 
         for (int i=0;i<fileNames.length;i++) {
@@ -260,9 +293,14 @@ public class BulkLoad
 
                 args.add(Integer.parseInt(line.get(18)));
                 args.add(Integer.parseInt(line.get(19)));
+                break;
+            case 1: // Customers unused
+                args.add(Integer.parseInt(line.get(0)));
+                args.add(Integer.parseInt(line.get(1)));
+                args.add(Integer.parseInt(line.get(2)));
                 args.add(line.get(20));
                 break;
-            case 1: // Orders
+            case 2: // Orders
                 args.add(Integer.parseInt(line.get(0)));
                 args.add(Integer.parseInt(line.get(1)));
                 args.add(Integer.parseInt(line.get(2)));
@@ -286,14 +324,17 @@ public class BulkLoad
                 }
                 args.add(arg7);
                 break;
-            case 2: // Items
+            case 3: // Items
                 args.add(Integer.parseInt(line.get(0)));
                 args.add(line.get(1));
                 args.add(Float.parseFloat(line.get(2)));
+                break;
+            case 4: // Items unused
+                args.add(Integer.parseInt(line.get(0)));
                 args.add(Integer.parseInt(line.get(3)));
                 args.add(line.get(4));
                 break;
-            case 3: // OrderLines
+            case 5: // OrderLines
                 args.add(Integer.parseInt(line.get(0)));
                 args.add(Integer.parseInt(line.get(1)));
                 args.add(Integer.parseInt(line.get(2)));
@@ -311,7 +352,7 @@ public class BulkLoad
                 args.add(Integer.parseInt(line.get(8)));  // ol_quantity
                 args.add(line.get(9));
                 break;
-            case 4: // Stocks
+            case 6: // Stocks
                 args.add(Integer.parseInt(line.get(0)));
                 args.add(Integer.parseInt(line.get(1)));
 
@@ -331,6 +372,10 @@ public class BulkLoad
                 args.add(line.get(13));
                 args.add(line.get(14));
                 args.add(line.get(15));
+                break;
+            case 7: // Stocks unused
+                args.add(Integer.parseInt(line.get(0)));
+                args.add(Integer.parseInt(line.get(1)));
 
                 args.add(line.get(16));
                 break;

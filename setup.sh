@@ -50,8 +50,12 @@ then
   unzip xact-spec-files.zip
 fi
 
+cd ..
+rm -rf import
+mkdir import
+
 # Bulk Loader Build Phase
-cd ../loader
+cd loader
 echo "Bulkloader build start..."
 ./gradlew build
 echo "Bulkloader build success"
@@ -69,7 +73,7 @@ echo "Loading schema success"
 # Bulk Load Phase
 echo "Bulkloading..."
 cd ../../
-tableNames="customers orders items orderlines stocks"
+tableNames="customers customers_unused orders items items_unused orderlines stocks stocks_unused"
 for name in $tableNames  # Note: No quotes
 do
   sstableloader -d localhost import/cs4224/$name
