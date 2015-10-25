@@ -58,8 +58,15 @@ CREATE TABLE Customers (
 	C_YTD_PAYMENT float,
 	C_PAYMENT_CNT int,
 	C_DELIVERY_CNT int,
-	C_DATA varchar,
-	PRIMARY KEY (C_W_ID, C_D_ID, C_ID)
+	PRIMARY KEY ((C_W_ID, C_D_ID), C_ID)
+);
+
+CREATE TABLE Customers_Unused (
+  C_W_ID int,
+	C_D_ID int,
+	C_ID int,
+  C_DATA varchar,
+  PRIMARY KEY ((C_W_ID, C_D_ID), C_ID)
 );
 
 CREATE TABLE Orders (
@@ -71,7 +78,7 @@ CREATE TABLE Orders (
 	O_OL_CNT int,
 	O_ALL_LOCAL int,
 	O_ENTRY_D timestamp,
-	PRIMARY KEY (O_W_ID, O_D_ID, O_ID)
+	PRIMARY KEY ((O_W_ID, O_D_ID), O_ID)
 );
 
 CREATE INDEX idx_o_c_id on Orders (o_c_id);
@@ -81,7 +88,12 @@ CREATE TABLE Items (
 	I_ID int,
 	I_NAME varchar,
 	I_PRICE float,
-	I_IM_ID int,
+	PRIMARY KEY (I_ID)
+);
+
+CREATE TABLE Items_Unused (
+  I_ID int,
+  I_IM_ID int,
 	I_DATA varchar,
 	PRIMARY KEY (I_ID)
 );
@@ -97,7 +109,7 @@ CREATE TABLE OrderLines (
 	OL_SUPPLY_W_ID int,
 	OL_QUANTITY int,
 	OL_DIST_INFO varchar,
-	PRIMARY KEY (OL_W_ID, OL_D_ID, OL_O_ID, OL_NUMBER)
+	PRIMARY KEY ((OL_W_ID, OL_D_ID), OL_O_ID, OL_NUMBER)
 );
 
 CREATE INDEX idx_ol_i_id ON OrderLines (ol_i_id);
@@ -119,11 +131,17 @@ CREATE TABLE Stocks (
 	S_DIST_08 varchar,
 	S_DIST_09 varchar,
 	S_DIST_10 varchar,
-	S_DATA text,
 	PRIMARY KEY (S_W_ID, S_I_ID)
 );
 
 CREATE INDEX idx_s_quantity on Stocks (s_quantity);
+
+CREATE TABLE Stocks_Unused (
+  S_W_ID int,
+	S_I_ID int,
+	S_DATA varchar,
+	PRIMARY KEY (S_W_ID, S_I_ID)
+);
 
 -- import data
 copy warehouses (w_id, w_name, w_street_1, w_street_2, w_city, w_state, w_zip, w_tax, w_ytd) from 'warehouse.csv' with NULL = 'null';
