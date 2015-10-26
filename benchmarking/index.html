@@ -29,14 +29,14 @@
   </select>
 </form>
 
-<svg id='visualisation' width='1500' height='1000'></svg>
+<svg id='visualisation' width='2500' height='1000'></svg>
 <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js'></script>
 <script src='https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js'></script>
 <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
 <script>
 function initChart(barData) {
   var vis = d3.select('#visualisation'),
-    WIDTH = 1500,
+    WIDTH = 2500,
     HEIGHT = 500,
     MARGINS = {
       top: 20,
@@ -90,6 +90,7 @@ function initChart(barData) {
       return "translate(" + this.getBBox().width*-0.4 + ", " + 35 + ")rotate(-45)";
     });
 
+  
   vis.selectAll('rect')
     .data(barData)
     .enter()
@@ -104,7 +105,9 @@ function initChart(barData) {
     .attr('height', function (d) {
       return ((HEIGHT - MARGINS.bottom) - yRange(d.y));
     })
-    .attr('fill', 'grey')
+    .attr('fill', function (d) {
+      console.log(d);
+    })
     .on('mouseover',function(d){
       d3.select(this)
         .attr('fill','blue');
@@ -126,7 +129,9 @@ $( document ).ready(function() {
     var barDataD40 = [];
     $.getJSON('compilation.json', function( data ) {
       var idxD8 = 0;
+      var idxD8_2node = 0;
       var idxD40 = 0;
+      var idxD40_2node = 0;
       $.each(data, function (key, val) {
         if (key.substring(0,3) == 'D08') {
           $.each(val, function (key1, val1) {
