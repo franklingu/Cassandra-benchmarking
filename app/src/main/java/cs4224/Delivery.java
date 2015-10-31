@@ -40,7 +40,7 @@ public class Delivery {
     }
 
     public void executeQuery(int inputWId, int inputCarrierId) {
-        for (int i = 1; i < 10; i++) {
+        for (int i = 1; i <= 10; i++) {
             int dId = i, cId = 0;
             ResultSet results = session.execute(selectMinOIdQuery.bind(inputWId, dId));
             int minOId = 0;

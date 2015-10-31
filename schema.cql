@@ -6,6 +6,16 @@ DROP KEYSPACE IF EXISTS cs4224;
 
 -- Create Namespace
 CREATE KEYSPACE cs4224 WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 1 };
+
+CREATE TYPE cs4224.OrderLine (
+	OL_I_ID int,
+	OL_DELIVERY_D timestamp,
+	OL_AMOUNT float,
+	OL_SUPPLY_W_ID int,
+	OL_QUANTITY int,
+	OL_DIST_INFO varchar
+);
+
 use cs4224;
 
 -- Create table
@@ -78,6 +88,7 @@ CREATE TABLE Orders (
 	O_OL_CNT int,
 	O_ALL_LOCAL int,
 	O_ENTRY_D timestamp,
+	O_OLS map<int, frozen<OrderLine>>,
 	PRIMARY KEY ((O_W_ID, O_D_ID), O_ID)
 );
 
