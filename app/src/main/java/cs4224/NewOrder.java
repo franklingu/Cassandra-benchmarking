@@ -1,12 +1,11 @@
 package cs4224;
 
-import com.datastax.driver.core.PreparedStatement;
-import com.datastax.driver.core.ResultSet;
-import com.datastax.driver.core.Row;
-import com.datastax.driver.core.Session;
+import com.datastax.driver.core.*;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Gison on 4/10/15.
@@ -15,7 +14,6 @@ public class NewOrder {
     private PreparedStatement warehouseQuery;
     private PreparedStatement districtQuery;
     private PreparedStatement customerQuery;
-    private PreparedStatement createOrderLineQuery;
     private PreparedStatement createOrderQuery;
     private Session session;
 
@@ -25,9 +23,7 @@ public class NewOrder {
         this.warehouseQuery = session.prepare("select w_tax from warehouses where w_id = ?;");
         this.customerQuery = session.prepare("select c_last, c_credit, c_discount from customers where c_w_id = ? and c_d_id = ? and c_id = ?;");
         this.districtQuery = session.prepare("select d_next_o_id, d_tax from districts where d_w_id = ? and d_id = ?;");
-        this.createOrderQuery = session.prepare("INSERT INTO orders (o_w_id, o_d_id, o_id, o_c_id, o_carrier_id, o_ol_cnt, o_all_local, o_entry_d) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?);");
-        this.createOrderLineQuery = session.prepare("INSERT INTO orderlines (ol_w_id, ol_d_id, ol_o_id, ol_number, ol_i_id, ol_delivery_d, ol_amount, ol_supply_w_id, ol_quantity, ol_dist_info) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+        this.createOrderQuery = session.prepare("INSERT INTO orders (o_w_id, o_d_id, o_id, o_c_id, o_carrier_id, o_ol_cnt, o_all_local, o_entry_d, o_ols) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?);");
 
     }
 
@@ -79,7 +75,6 @@ public class NewOrder {
 
         // insert this order
         Date entryDate = new Date();
-        session.execute(createOrderQuery.bind(w_id, d_id, orderNo, c_id, null, num_items, isAllLocal, entryDate));
         System.out.println(String.format("Order number: %d, %s", orderNo, entryDate));
 
         float totalAmount = (float)0.0;
@@ -89,6 +84,11 @@ public class NewOrder {
         float price, item_amount;
         Row resultRow;
         ArrayList<String> outputInfo = new ArrayList<String>();
+
+        // Collection type
+        Map<Integer, UDTValue> orderLines = new HashMap<Integer, UDTValue>();
+        UserType orderLineType = session.getCluster().getMetadata().getKeyspace("cs4224").getUserType("orderline");
+        UDTValue newOrderLine;
 
         for (int i = 0; i < num_items; i++) {
             item = item_number[i];
@@ -127,12 +127,21 @@ public class NewOrder {
             // sum up total amount
             totalAmount += item_amount;
 
-            // create new order line
-            session.execute(createOrderLineQuery.bind(w_id, d_id, orderNo, i + 1, item, null, item_amount, warehouse, request_quantity, district_info));
+            // create new orderline UDTValue
+            newOrderLine = orderLineType.newValue()
+                                .setInt("OL_I_ID", item)
+                                .setTimestamp("ol_delivery_d", null)
+                                .setFloat("ol_amount", item_amount)
+                                .setInt("ol_supply_w_id", warehouse)
+                                .setInt("ol_quantity", request_quantity)
+                                .setString("ol_dist_info", district_info);
+            orderLines.put(i + 1, newOrderLine);
 
             // add output info
             outputInfo.add(String.format("Item: %d: %s, Warehouse %d. Quantity: %d. Amount: %.2f. Stock: %d", i + 1, name, warehouse, request_quantity, item_amount, s_quantity));
         }
+
+        session.execute(createOrderQuery.bind(w_id, d_id, orderNo, c_id, null, num_items, isAllLocal, entryDate, orderLines));
 
         totalAmount = totalAmount * (1 + district_tax + warehouse_tax) * (1 - discount);
         System.out.println(String.format("Total items: %d, total amount: %.2f", num_items, totalAmount));
