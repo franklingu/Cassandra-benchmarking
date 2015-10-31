@@ -1,11 +1,10 @@
 package cs4224;
 
-import com.datastax.driver.core.PreparedStatement;
-import com.datastax.driver.core.ResultSet;
-import com.datastax.driver.core.Row;
-import com.datastax.driver.core.Session;
+import com.datastax.driver.core.*;
 
+import java.sql.Timestamp;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Jiang Sheng on 4/10/15.
@@ -20,8 +19,7 @@ public class OrderStatus {
         session = client.getSession();
 
         this.customerQuery = session.prepare("select c_first, c_middle, c_last, c_balance from customers where c_w_id = ? and c_d_id = ? and c_id = ?;");
-        this.orderLineQuery = session.prepare("select ol_i_id, ol_supply_w_id, ol_quantity, ol_amount, ol_delivery_d from orderlines where ol_w_id = ? and ol_d_id = ? and ol_o_id = ?;");
-        this.orderQuery = session.prepare("select o_id, o_entry_d, o_carrier_id from orders where o_w_id = ? and o_d_id = ? and o_c_id = ?;");
+        this.orderQuery = session.prepare("select o_id, o_entry_d, o_carrier_id, o_ols from orders where o_w_id = ? and o_d_id = ? and o_c_id = ?;");
     }
 
     /**
@@ -59,16 +57,17 @@ public class OrderStatus {
 
         Row lastOrder = allOrders.get(targetIndex);
         int orderId = lastOrder.getInt("o_id");
+
         System.out.println("Last Order:");
         System.out.println(String.format("id: %d, time: %s, carrier_id: %d", orderId,
                 lastOrder.getTimestamp("o_entry_d"), lastOrder.getInt("o_carrier_id")));
 
         // retrieve order-line for this order.
-        results = session.execute(orderLineQuery.bind(c_w_id, c_d_id, orderId));
-        System.out.println("Items in this order:");
-        for (Row row : results) {
-            System.out.println(String.format("%d, %d, %d, %.4f, %s ",row.getInt("ol_i_id"), row.getInt("ol_supply_w_id"),
-                    row.getInt("ol_quantity"), row.getFloat("ol_amount"), row.getTimestamp("ol_delivery_d")));
+        Map<Integer, UDTValue> ols = lastOrder.getMap("o_ols", Integer.class, UDTValue.class);
+        for (Integer key: ols.keySet()) {
+            UDTValue ol = ols.get(key);
+            System.out.println(String.format("%d, %d, %d, %.4f, %s ",ol.getInt("ol_i_id"), ol.getInt("ol_supply_w_id"),
+                    ol.getInt("ol_quantity"), ol.getFloat("ol_amount"), ol.getTimestamp("ol_delivery_d")));
         }
 
         System.out.println();
@@ -79,9 +78,9 @@ public class OrderStatus {
         client.connect("127.0.0.1", "cs4224");
 
         OrderStatus transaction = new OrderStatus(client);
-        transaction.getOrderStatus(1, 1, 5);
+        transaction.getOrderStatus(1, 1, 1);
         transaction.getOrderStatus(3, 2, 20);
-        transaction.getOrderStatus(2, 4, 10);
+        transaction.getOrderStatus(2, 1, 1);
 
         client.close();
     }
