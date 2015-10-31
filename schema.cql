@@ -58,7 +58,7 @@ CREATE TABLE Customers (
 	C_YTD_PAYMENT float,
 	C_PAYMENT_CNT int,
 	C_DELIVERY_CNT int,
-	PRIMARY KEY (C_W_ID, C_D_ID, C_ID)
+	PRIMARY KEY ((C_W_ID, C_D_ID), C_ID)
 );
 
 CREATE TABLE Customers_Unused (
@@ -66,7 +66,7 @@ CREATE TABLE Customers_Unused (
 	C_D_ID int,
 	C_ID int,
   C_DATA varchar,
-  PRIMARY KEY (C_W_ID, C_D_ID, C_ID)
+  PRIMARY KEY ((C_W_ID, C_D_ID), C_ID)
 );
 
 CREATE TABLE Orders (
@@ -78,7 +78,7 @@ CREATE TABLE Orders (
 	O_OL_CNT int,
 	O_ALL_LOCAL int,
 	O_ENTRY_D timestamp,
-	PRIMARY KEY (O_W_ID, O_D_ID, O_ID)
+	PRIMARY KEY ((O_W_ID, O_D_ID), O_ID)
 );
 
 CREATE INDEX idx_o_c_id on Orders (o_c_id);
@@ -109,7 +109,7 @@ CREATE TABLE OrderLines (
 	OL_SUPPLY_W_ID int,
 	OL_QUANTITY int,
 	OL_DIST_INFO varchar,
-	PRIMARY KEY (OL_W_ID, OL_D_ID, OL_O_ID, OL_NUMBER)
+	PRIMARY KEY ((OL_W_ID, OL_D_ID), OL_O_ID, OL_NUMBER)
 );
 
 CREATE INDEX idx_ol_i_id ON OrderLines (ol_i_id);

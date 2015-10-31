@@ -70,14 +70,14 @@ public class BulkLoad
             "C_YTD_PAYMENT float," +
             "C_PAYMENT_CNT int," +
             "C_DELIVERY_CNT int," +
-            "PRIMARY KEY (C_W_ID, C_D_ID, C_ID));";
+            "PRIMARY KEY ((C_W_ID, C_D_ID), C_ID));";
     
     public static final String SCHEMA1_UNUSED = "CREATE TABLE cs4224.customers_unused (" +
             "C_W_ID int," +
             "C_D_ID int," +
             "C_ID int," +
             "C_DATA varchar," +
-            "PRIMARY KEY (C_W_ID, C_D_ID, C_ID));";
+            "PRIMARY KEY ((C_W_ID, C_D_ID), C_ID));";
 
     public static final String SCHEMA2 = "CREATE TABLE cs4224.orders (" +
             "O_W_ID int," +
@@ -88,7 +88,7 @@ public class BulkLoad
             "O_OL_CNT int," +
             "O_ALL_LOCAL int," +
             "O_ENTRY_D timestamp," +
-            "PRIMARY KEY (O_W_ID, O_D_ID, O_ID));";
+            "PRIMARY KEY ((O_W_ID, O_D_ID), O_ID));";
 
 
     public static final String SCHEMA3 = "CREATE TABLE cs4224.items (" +
@@ -114,7 +114,7 @@ public class BulkLoad
             "OL_SUPPLY_W_ID int," +
             "OL_QUANTITY int," +
             "OL_DIST_INFO varchar," +
-            "PRIMARY KEY (OL_W_ID, OL_D_ID, OL_O_ID, OL_NUMBER));";
+            "PRIMARY KEY ((OL_W_ID, OL_D_ID), OL_O_ID, OL_NUMBER));";
 
     public static final String SCHEMA5 = "CREATE TABLE cs4224.stocks (" +
             "S_W_ID int," +
