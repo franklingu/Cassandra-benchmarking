@@ -1,5 +1,6 @@
 package cs4224;
 import com.datastax.driver.core.*;
+
 import java.sql.Timestamp;
 import java.util.*;
 
@@ -25,7 +26,7 @@ public class Delivery {
     public Delivery(SimpleClient client) {
         this.session = client.getSession();
 
-        this.selectMinOIdQuery = session.prepare("SELECT min(o_id) as min_o_id, o_c_id "
+        this.selectMinOIdQuery = session.prepare("SELECT min(o_id) as min_o_id, o_c_id, o_ols "
                 + "FROM Orders where o_w_id = ? AND o_d_id = ? AND o_carrier_id = 0;");
         this.updateCarrierIdQuery = session.prepare("UPDATE Orders SET o_carrier_id = ? WHERE o_w_id = ? AND o_d_id = ?"
                 + " AND o_id = ?;");
@@ -40,9 +41,17 @@ public class Delivery {
     }
 
     public void executeQuery(int inputWId, int inputCarrierId) {
+        ResultSet results = session.execute(selectMinOIdQuery.bind(inputWId, 1));
+        for (Row row: results) {
+            Map<Integer, UDTValue> ols = row.getMap("o_ols", Integer.class, UDTValue.class);
+            for (Integer i: ols.keySet()) {
+                UDTValue is = ols.get(i);
+                System.out.println(is.toString());
+            }
+        }
         for (int i = 1; i <= 10; i++) {
             int dId = i, cId = 0;
-            ResultSet results = session.execute(selectMinOIdQuery.bind(inputWId, dId));
+            results = session.execute(selectMinOIdQuery.bind(inputWId, dId));
             int minOId = 0;
             for (Row row : results) {
                 minOId = row.getInt("min_o_id");
