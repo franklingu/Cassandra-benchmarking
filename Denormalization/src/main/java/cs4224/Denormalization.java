@@ -1,11 +1,11 @@
 package cs4224;
 
-import com.datastax.driver.core.PreparedStatement;
-import com.datastax.driver.core.ResultSet;
-import com.datastax.driver.core.Row;
-import com.datastax.driver.core.Session;
+import com.datastax.driver.core.*;
 
+import java.sql.Timestamp;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Denormalization {
     private Session session;
@@ -29,8 +29,7 @@ public class Denormalization {
         this.selectCorrespondingOrderLines = session.prepare("SELECT ol_number, ol_amount, ol_delivery_d," +
                 " ol_dist_info, ol_i_id, ol_quantity, ol_supply_w_id FROM orderlines WHERE ol_w_id = ? AND ol_d_id = ?" +
                 " AND ol_o_id = ?;");
-        this.updateOrderForOrderLines = session.prepare("UPDATE orders set o_ols[?] = {OL_I_ID: ?," +
-                " OL_DELIVERY_D: ?, OL_AMOUNT: ?, OL_SUPPLY_W_ID: ?, OL_QUANTITY: ?, OL_DIST_INFO: ?} where o_w_id = ?" +
+        this.updateOrderForOrderLines = session.prepare("UPDATE orders set o_ols = ? where o_w_id = ?" +
                 " and o_d_id = ? and o_id = ?;");
     }
 
@@ -43,6 +42,9 @@ public class Denormalization {
                 ResultSet allOrdersResults = session.execute(selectAllOrdersQuery.bind(wId, dId));
                 for (Row orderRow: allOrdersResults) {
                     int oId = orderRow.getInt("o_id");
+                    Map<Integer, UDTValue> orderLines = new HashMap<Integer, UDTValue>();
+                    UserType orderLineType = session.getCluster().getMetadata().getKeyspace("cs4224").getUserType("orderline");
+                    UDTValue newOrderLine;
                     ResultSet allOrderLinesResults = session.execute(selectCorrespondingOrderLines.bind(wId, dId, oId));
                     for (Row orderLineRow: allOrderLinesResults) {
                         int olNumber = orderLineRow.getInt("ol_number");
@@ -52,9 +54,16 @@ public class Denormalization {
                         int olIId = orderLineRow.getInt("ol_i_id");
                         int olQuantity = orderLineRow.getInt("ol_quantity");
                         int olSupplyWId = orderLineRow.getInt("ol_supply_w_id");
-                        session.execute(updateOrderForOrderLines.bind(olNumber, olIId, olDeliveryD, olAmount,
-                                olSupplyWId, olQuantity, olDistInfo, wId, dId, oId));
+                        newOrderLine = orderLineType.newValue()
+                                .setInt("OL_I_ID", olIId)
+                                .setTimestamp("ol_delivery_d", new Timestamp(olDeliveryD.getTime()))
+                                .setFloat("ol_amount", olAmount)
+                                .setInt("ol_supply_w_id", olSupplyWId)
+                                .setInt("ol_quantity", olQuantity)
+                                .setString("ol_dist_info", olDistInfo);
+                        orderLines.put(olNumber, newOrderLine);
                     }
+                    session.execute(updateOrderForOrderLines.bind(orderLines, wId, dId, oId));
                 }
             }
         }
