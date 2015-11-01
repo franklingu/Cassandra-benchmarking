@@ -56,7 +56,7 @@ public class Denormalization {
                         int olSupplyWId = orderLineRow.getInt("ol_supply_w_id");
                         newOrderLine = orderLineType.newValue()
                                 .setInt("OL_I_ID", olIId)
-                                .setTimestamp("ol_delivery_d", new Timestamp(olDeliveryD.getTime()))
+                                .setTimestamp("ol_delivery_d", olDeliveryD == null ? null : (new Timestamp(olDeliveryD.getTime())))
                                 .setFloat("ol_amount", olAmount)
                                 .setInt("ol_supply_w_id", olSupplyWId)
                                 .setInt("ol_quantity", olQuantity)
