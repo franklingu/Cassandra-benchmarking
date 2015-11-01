@@ -1,12 +1,10 @@
 package cs4224;
 
-import com.datastax.driver.core.PreparedStatement;
-import com.datastax.driver.core.ResultSet;
-import com.datastax.driver.core.Row;
-import com.datastax.driver.core.Session;
+import com.datastax.driver.core.*;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Wang Yu on 05-Oct-15.
@@ -15,18 +13,18 @@ public class PopularItem {
     private Session session;
     private PreparedStatement selectOrder;
     private PreparedStatement selectCustomer;
-    private PreparedStatement selectOrderLine;
+    //private PreparedStatement selectOrderLine;
     private PreparedStatement selectItem;
     private PreparedStatement selectDistrict;
 
     public PopularItem(SimpleClient client){
         this.session = client.getSession();
         // select orders with o_id > nextOrderID - range
-        selectOrder = session.prepare("SELECT o_id, o_c_id, o_entry_d FROM orders WHERE o_w_id = ? AND o_d_id = ? AND o_id >= ?;");
+        selectOrder = session.prepare("SELECT o_id, o_c_id, o_entry_d, o_ols FROM orders WHERE o_w_id = ? AND o_d_id = ? AND o_id >= ?;");
         // find customer whom placed this order
         selectCustomer = session.prepare("SELECT c_first, c_middle, c_last FROM customers WHERE c_w_id = ? AND c_d_id = ? AND c_id = ?;");
         // find order details from orderlines
-        selectOrderLine = session.prepare("SELECT ol_i_id, ol_quantity FROM orderlines WHERE ol_w_id = ? AND ol_d_id = ? AND ol_o_id = ?;");
+        //selectOrderLine = session.prepare("SELECT ol_i_id, ol_quantity FROM orderlines WHERE ol_w_id = ? AND ol_d_id = ? AND ol_o_id = ?;");
         selectItem = session.prepare("SELECT i_name FROM items WHERE i_id = ?;");
         selectDistrict = session.prepare("SELECT d_next_o_id FROM districts WHERE d_w_id = ? AND d_id = ?;");
     }
@@ -52,23 +50,29 @@ public class PopularItem {
             System.out.println(String.format("Order Number: %d, Entry Date and Time: %s, Name: (%s %s %s),", orderID, order.getTimestamp("o_entry_d"),
                     customer.getString("c_first"), customer.getString("c_middle"), customer.getString("c_last")));
 
-            ResultSet orderLines = session.execute(selectOrderLine.bind(W_ID, D_ID, orderID));
+            // ResultSet orderLines = session.execute(selectOrderLine.bind(W_ID, D_ID, orderID));
+            // get orderline details for this order
+            Map<Integer, UDTValue> ols = order.getMap("o_ols", Integer.class, UDTValue.class);
 
             int popularItmID = -1;
             int popularItmCnt = 0;
-            for(Row orderLine: orderLines){
-                int quantity = orderLine.getInt("ol_quantity");
-                int itmID = orderLine.getInt("ol_i_id");
+            for(Integer key: ols.keySet()){
+                UDTValue ol = ols.get(key);
+                int quantity = ol.getInt("ol_quantity");
+                int itmID = ol.getInt("ol_i_id");
+
                 if( quantity >= popularItmCnt ){
                     popularItmCnt = quantity;
                     popularItmID = itmID;
                 }
+
                 if(!itemCount.containsKey(itmID)){
                     itemCount.put(itmID, 1);
                 }else{
                     itemCount.put(itmID, itemCount.get(itmID) + 1);
                 }
             }
+
             if (popularItmID != -1) {
                 // find popular item name from items
                 ResultSet popularItems = session.execute(selectItem.bind(popularItmID));
