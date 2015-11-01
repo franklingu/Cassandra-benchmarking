@@ -78,7 +78,7 @@ for name in $tableNames  # Note: No quotes
 do
   sstableloader -d localhost import/cs4224/$name
 done
-# cd Denormalization/
-# ./sub_setup.sh
-# cqlsh -e "use cs4224; drop table orderlines;"
+cd Denormalization/
+./sub_setup.sh
+cqlsh -e "use cs4224; drop table orderlines;"
 echo "Initialization Successful"
