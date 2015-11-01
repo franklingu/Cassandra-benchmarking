@@ -7,7 +7,6 @@ import java.util.*;
 public class Delivery {
     private Session session;
     private PreparedStatement selectMinOIdQuery;
-    private PreparedStatement updateCarrierIdQuery;
     private PreparedStatement updateDeliveryDateQuery;
     private PreparedStatement selectBalanceCntQuery;
     private PreparedStatement updateBalanceCntQuery;
@@ -27,10 +26,7 @@ public class Delivery {
 
         this.selectMinOIdQuery = session.prepare("SELECT min(o_id) as min_o_id, o_c_id, o_ols "
                 + "FROM Orders where o_w_id = ? AND o_d_id = ? AND o_carrier_id = 0;");
-        this.updateCarrierIdQuery = session.prepare("UPDATE Orders SET o_carrier_id = ? WHERE o_w_id = ? AND o_d_id = ?"
-                + " AND o_id = ?;");
-        this.updateDeliveryDateQuery = session.prepare("UPDATE orders set o_ols[?] = {OL_I_ID: ?," +
-                " OL_DELIVERY_D: ?, OL_AMOUNT: ?, OL_SUPPLY_W_ID: ?, OL_QUANTITY: ?, OL_DIST_INFO: ?} where o_w_id = ?" +
+        this.updateDeliveryDateQuery = session.prepare("UPDATE Orders set o_carrier_id = ?, o_ols = ? where o_w_id = ?" +
                 " and o_d_id = ? and o_id = ?;");
         this.selectBalanceCntQuery = session.prepare("SELECT c_balance, c_delivery_cnt FROM Customers WHERE c_w_id = ? AND c_d_id = ?"
                 + " AND c_id = ?;");
@@ -43,29 +39,37 @@ public class Delivery {
             int dId = i;
             int minOId = 0, cId = 0;
             float olSum = 0;
-            int olNumber, olQuantity, olSupplyWId, olIId;
+            int olQuantity, olSupplyWId, olIId;
             float olAmount;
             String olDistInfo;
             ResultSet results = session.execute(selectMinOIdQuery.bind(inputWId, dId));
             Date now = new Date();
+            Map<Integer, UDTValue> orderLines = new HashMap<Integer, UDTValue>();
+            UserType orderLineType = session.getCluster().getMetadata().getKeyspace("cs4224").getUserType("orderline");
+            UDTValue newOrderLine;
             for (Row row: results) {
                 minOId = row.getInt("min_o_id");
                 System.out.format("%d\n", minOId);
                 cId = row.getInt("o_c_id");
-                session.execute(updateCarrierIdQuery.bind(inputCarrierId, inputWId, dId, minOId));
                 Map<Integer, UDTValue> ols = row.getMap("o_ols", Integer.class, UDTValue.class);
                 for (Integer key: ols.keySet()) {
                     UDTValue ol = ols.get(key);
-                    olNumber = key.intValue();
                     olIId = ol.getInt("ol_i_id");
                     olQuantity = ol.getInt("ol_quantity");
                     olDistInfo = ol.getString("ol_dist_info");
                     olSupplyWId = ol.getInt("ol_supply_w_id");
                     olAmount = ol.getFloat("ol_amount");
                     olSum += olAmount;
-                    session.execute(updateDeliveryDateQuery.bind(olNumber, olIId, new Timestamp(now.getTime()),
-                            olAmount, olSupplyWId, olQuantity, olDistInfo, inputWId, dId, minOId));
+                    newOrderLine = orderLineType.newValue()
+                            .setInt("OL_I_ID", olIId)
+                            .setTimestamp("ol_delivery_d", new Timestamp(now.getTime()))
+                            .setFloat("ol_amount", olAmount)
+                            .setInt("ol_supply_w_id", olSupplyWId)
+                            .setInt("ol_quantity", olQuantity)
+                            .setString("ol_dist_info", olDistInfo);
+                    orderLines.put(key, newOrderLine);
                 }
+                session.execute(updateDeliveryDateQuery.bind(inputCarrierId, orderLines, inputWId, dId, minOId));
                 break;
             }
 

@@ -7,9 +7,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by Gison on 4/10/15.
- */
 public class NewOrder {
     private PreparedStatement warehouseQuery;
     private PreparedStatement districtQuery;
@@ -24,16 +21,8 @@ public class NewOrder {
         this.customerQuery = session.prepare("select c_last, c_credit, c_discount from customers where c_w_id = ? and c_d_id = ? and c_id = ?;");
         this.districtQuery = session.prepare("select d_next_o_id, d_tax from districts where d_w_id = ? and d_id = ?;");
         this.createOrderQuery = session.prepare("INSERT INTO orders (o_w_id, o_d_id, o_id, o_c_id, o_carrier_id, o_ol_cnt, o_all_local, o_entry_d, o_ols) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?);");
-
     }
 
-    /**
-     * Get Order Status data
-     *
-     * @param w_id
-     * @param d_id
-     * @param c_id
-     */
     public void createOrder(int w_id, int d_id, int c_id, int num_items,
                             int[] item_number, int[] supplier_warehouse, int[] quantity) {
 
